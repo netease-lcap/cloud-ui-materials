@@ -85,7 +85,7 @@ export function getSubFormConfig(process: ProcessV2, source?: any, likeComponent
   return (
     process?.bind?.typeAnnotation?.properties
       ?.filter((property: any) => {
-        if (property?.name?.startsWith('relation_data')) {
+        if (property?.name?.startsWith('relation_data') || property?.name?.startsWith('relationData')) {
           const { typeName } = property.typeAnnotation.typeArguments[0];
           return source ? source[typeName] : true;
         }
