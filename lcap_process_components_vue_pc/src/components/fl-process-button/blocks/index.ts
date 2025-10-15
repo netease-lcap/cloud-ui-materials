@@ -530,7 +530,7 @@ setTimeout(() => {
                 }>
                 <URadios
                   ref="${nameGroup.revertReSubmitRadioRef}"
-                  style="-width:546px;--radio-space-x:40px;--radio-space-y:8px;margin-top:4px;"
+                  style="width:546px;--radio-space-x:40px;--radio-space-y:8px;margin-top:4px;"
                   value={$sync(${nameGroup.buttonBody}.afterComplete)}
                   valueField=""
                   slotItem={
