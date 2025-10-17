@@ -70,13 +70,11 @@ export function genProcessV2LaunchLogic(
       })
       .join('\n') || '';
   // step3: 生成调用逻辑的data参数
-  const relationDataName = process?.bind?.typeAnnotation?.properties
-      ?.find((property: any) => property?.name?.startsWith('relation_data')) ? 'relation_data' : 'relationData';
   const dataArgs = variableConfigList
     .map((variableConfig, index) => {
       return variableConfig.isMainEntity
         ? `data: variable1`
-        : `${relationDataName}${index - 1 === 0 ? '' : `${index - 1}`}: param${
+        : `${variableConfig.name}: param${
             index + 1
           }`;
     })
