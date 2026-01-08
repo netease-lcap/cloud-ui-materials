@@ -1,0 +1,13 @@
+Plugin-Version: 1.0.0
+Library-Type: Frontend
+Metadata-File: nasl.extension.json
+Tag: Vue
+packages/extension/extend_download@1.0.13/dist-theme/index.js: dist-theme/index.js
+packages/extension/extend_download@1.0.13/dist-theme/index.js.map: dist-theme/index.js.map
+packages/extension/extend_download@1.0.13/dist-theme/index.mjs: dist-theme/index.mjs
+packages/extension/extend_download@1.0.13/dist-theme/index.mjs.map: dist-theme/index.mjs.map
+packages/extension/extend_download@1.0.13/manifest: manifest
+packages/extension/extend_download@1.0.13/source.zip: source.zip
+packages/extension/extend_download@1.0.13/nasl.extension.d.ts: nasl.extension.d.ts
+packages/extension/extend_download@1.0.13/nasl.extension.json: nasl.extension.json
+packages/extension/extend_download@1.0.13/zip.tgz: zip.tgz
