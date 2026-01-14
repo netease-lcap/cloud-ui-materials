@@ -1,7 +1,7 @@
 {
   "name": "lcap_process_components_vue_pc",
   "private": "true",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "lcapIdeVersion": "4.3",
   "title": "流程2.0Vue前端组件依赖库（PC端）",
   "description": "流程2.0Vue前端组件依赖库（PC端）",

@@ -14,6 +14,9 @@ export const StartNewSVG = `<svg width="24" height="24" viewBox="0 0 24 24" fill
 <path d="M15.5 11.134C16.1667 11.5189 16.1667 12.4811 15.5 12.866L11 15.4641C10.3333 15.849 9.5 15.3679 9.5 14.5981L9.5 9.40192C9.5 8.63212 10.3333 8.151 11 8.5359L15.5 11.134Z" fill="white"/>
 </svg>`;
 export const TodoSVG = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="none" version="1.1" width="16" height="16" viewBox="0 0 16 16"><defs><clipPath id="master_svg0_1094_123954"><rect x="0" y="0" width="16" height="16" rx="0"/></clipPath></defs><g clip-path="url(#master_svg0_1094_123954)"><g><path d="M8,16C3.58172,16,0,12.4182,0,8C0,3.58172,3.58172,0,8,0C12.4182,0,16,3.58172,16,8C16,12.4182,12.4182,16,8,16ZM8.8,8L8.8,4L7.2,4L7.2,9.6L12,9.6L12,8L8.8,8Z" fill="#CCCCCC" fill-opacity="1"/></g></g></svg>`;
+export const CallLogicProcessSVG = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.00023 15.6189L12.4602 11.159C14.9234 8.69579 14.9234 4.70222 12.4602 2.23904C9.99699 -0.224131 6.00343 -0.224131 3.54025 2.23904C1.07708 4.70222 1.07708 8.69579 3.54025 11.159L8.00023 15.6189ZM8.00006 8.56216C6.7347 8.56216 5.70892 7.53646 5.70892 6.2712C5.70892 5.00594 6.7347 3.98024 8.00006 3.98024C9.26541 3.98024 10.2912 5.00594 10.2912 6.2712C10.2912 7.53646 9.26541 8.56216 8.00006 8.56216Z" fill="#337EFF"/>
+</svg>`;
 export function makeSVGImage(svg) {
   const img = new Image();
   const blob = new Blob([svg], {
@@ -32,5 +35,6 @@ export const LogicIconMap = {
   ResolvedIcon: makeSVGImage(ResolvedSVG),
   InclusiveGateway: makeSVGImage(InclusiveGatewaySVG),
   ExclusiveGateway: makeSVGImage(ExclusiveGatewaySVG),
-  ParallelGateway: makeSVGImage(parallelGatewaySVG)
+  ParallelGateway: makeSVGImage(parallelGatewaySVG),
+  CallLogicProcessIcon: makeSVGImage(CallLogicProcessSVG)
 };
