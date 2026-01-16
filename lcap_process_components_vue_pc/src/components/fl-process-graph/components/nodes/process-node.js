@@ -6,7 +6,6 @@ import end from './end.vue';
 // import autoTask from './auto-task.vue';
 import taskNode from './task-node.vue';
 import gatewayNode from './gateway-node.vue';
-import callSubProcessNode from './callSubProcess-node.vue';
 
 import { makeProcessNode } from './makeProcessNode';
 
@@ -18,7 +17,6 @@ const EndNode = makeProcessNode(end);
 const taskNodeWrapped = makeProcessNode(taskNode);
 const gatewayNodeWrapped = makeProcessNode(gatewayNode);
 // const parallelGatewayNode = makeProcessNode(parallelGateway);
-const callSubProcessNodeWrapped = makeProcessNode(callSubProcessNode);
 
 function getComponent(type, node) {
     switch (type) {
@@ -32,13 +30,12 @@ function getComponent(type, node) {
         case 'ServiceTask':
         case 'SubmitTask':
         case 'CCTask':
+        case 'CallSubProcess':
             return taskNodeWrapped;
         case 'ExclusiveGateway':
         case 'ParallelGateway':
         case 'InclusiveGateway':
             return gatewayNodeWrapped;
-        case 'CallSubProcess':
-            return callSubProcessNodeWrapped;
         default:
             throw `type: ${type} 的节点没有定义渲染方法`
             // return null;

@@ -42,11 +42,7 @@ export default {
             return this.node.title || this.node.name;
         },
         status() {
-            if (this.subProcessInfos) {
-                const hasNoEndTime = this.subProcessInfos.some(info => !info.endTime);
-                return hasNoEndTime ? '处理中' : '已完成';
-            }
-            return '处理中';
+            return this.node.current ? '处理中' : this.getHeadStatusTitle(this.node);
         },
         subProcessInfos() {
             return this.node.subProcessInfos;
@@ -59,6 +55,9 @@ export default {
         getDisplayName(user) {
             const { userName, displayName } = user || {};
             return displayName ? displayName : userName;
+        },
+        getHeadStatusTitle(info) {
+            return `${info.completed ? '已' : '未'}处理`;
         },
     }
 };
