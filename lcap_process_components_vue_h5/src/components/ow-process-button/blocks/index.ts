@@ -52,7 +52,7 @@ export function genOwProcessButton(node: naslTypes.ViewElement | any) {
     let ${nameGroup.approvalPolicy}: string; //流程按钮加签方式
     let ${
       nameGroup.buttonBodyVar
-    }: { task: String, comment: String, userForOperate: String, policyForAddSign: String, nodeId: String, afterComplete: String }; //流程按钮弹窗body，名称勿改！！！
+    }: { task: String, comment: String, userForOperate: List<String>, policyForAddSign: String, nodeId: String, afterComplete: String }; //流程按钮弹窗body，名称勿改！！！
 
     function ${nameGroup.getTaskOperationPermissionsEvent}() {
       let ${nameGroup.permissionDetailsVar}
