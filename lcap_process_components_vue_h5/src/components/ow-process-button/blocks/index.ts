@@ -167,9 +167,9 @@ if (window.__processDetailFromMixinFormVm__ && window.__processDetailFromMixinFo
         } else if (name === 'withdraw') {
           ${logicNamespace}.withdrawTask(taskId)
         } else if (name === 'addSign') {
-          ${logicNamespace}.addSignTask(taskId, ${nameGroup.buttonBodyVar}.userForOperate, ${nameGroup.buttonBodyVar}.policyForAddSign)
+          ${logicNamespace}.addSignTaskForMultiUser(taskId, ${nameGroup.buttonBodyVar}.userForOperate, ${nameGroup.buttonBodyVar}.policyForAddSign)
         } else if (name === 'reassign') {
-          ${logicNamespace}.reassignTask(taskId, ${nameGroup.buttonBodyVar}.userForOperate)
+          ${logicNamespace}.reassignTaskForMultiUser(taskId, ${nameGroup.buttonBodyVar}.userForOperate)
         } else {
           nasl.js.block(\`'use JSBlock' \n
 const operate = name+'Task';
@@ -656,6 +656,7 @@ padding-bottom: 2.66667vw;"
                     filterable={true}
                     closeOnClickOverlay={true}
                     pageable={true}
+                    multiple={true}
                     slot-picker-bottom={
                       <>
                         <VanPickerActionSlot targetMethod="cancel">
