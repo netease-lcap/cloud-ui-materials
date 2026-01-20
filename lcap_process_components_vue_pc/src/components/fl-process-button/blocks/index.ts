@@ -159,9 +159,9 @@ if (window.__processDetailFromMixinFormVm__ && window.__processDetailFromMixinFo
         } else if (name === 'withdraw') {
           ${logicNamespace}.withdrawTask(taskId)
         } else if (name === 'addSign') {
-          ${logicNamespace}.addSignTask(taskId, ${nameGroup.buttonBody}.userForOperate, ${nameGroup.buttonBody}.policyForAddSign)
+          ${logicNamespace}.addSignTaskForMultiUser(taskId, ${nameGroup.buttonBody}.userForOperate, ${nameGroup.buttonBody}.policyForAddSign)
         } else if (name === 'reassign') {
-          ${logicNamespace}.reassignTask(taskId, ${nameGroup.buttonBody}.userForOperate)
+          ${logicNamespace}.reassignTaskForMultiUser(taskId, ${nameGroup.buttonBody}.userForOperate)
         } else {
           nasl.js.block(\`'use JSBlock' \nconst operate = name+'Task';
 const body = {
@@ -434,6 +434,7 @@ setTimeout(() => {
                   valueField="userName"
                   initialLoad={true}
                   filterable={true}
+                  multiple={true}
                   slotOption={
                     (current) => <UText text={(function match(_value) {
                       if (_value === true) {
