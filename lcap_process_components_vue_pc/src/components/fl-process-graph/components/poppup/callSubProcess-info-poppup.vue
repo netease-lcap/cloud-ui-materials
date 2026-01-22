@@ -50,14 +50,14 @@ export default {
     },
     methods: {
         getStatusTitle(type, info) {
-            return `${info.endTime ? '已处理' : '未处理'}`;
+            return `${info.endTime ? '已处理' : '处理中'}`;
         },
         getDisplayName(user) {
             const { userName, displayName } = user || {};
             return displayName ? displayName : userName;
         },
         getHeadStatusTitle(info) {
-            return `${info.completed ? '已' : '未'}处理`;
+            return `${info.completed ? '已处理' : '未处理'}`;
         },
     }
 };
@@ -145,7 +145,7 @@ export default {
     color: #26BD71;
 }
 .infoStatus{
-    color: #F24957;
+    color: #337EFF;
 }
 .infoBody{
 

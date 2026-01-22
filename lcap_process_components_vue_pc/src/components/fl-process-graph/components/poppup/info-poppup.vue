@@ -44,7 +44,7 @@ export default {
             return this.node.title || this.node.name;
         },
         status() {
-            return this.node.current ? '处理中' : this.getStatusTitle(this.node.type, this.node);
+            return this.node.current ? '处理中' : this.getHeadStatusTitle(this.node.type, this.node);
         },
         completeInfo() {
             return this.node.completeInfos;
@@ -66,7 +66,10 @@ export default {
             return `${name}：${info.completeTime || '-'}`
         },
         getStatusTitle(type, info) {
-            return `${info.completed ? '已' : '未'}${type === 'CCTask' ? '抄送' : '处理'}`;
+            if (type === 'CCTask') {
+                return `${info.completed ? '已抄送' : '未抄送'}`;
+            }
+            return `${info.completed ? '已处理' : '处理中'}`;
         },
         getDisplayName(user) {
             const { userName, displayName } = user || {};
@@ -74,7 +77,10 @@ export default {
         },
         getCandidatesTitle(candidates){
             return (candidates || []).slice(0, 10).map(this.getDisplayName).join('、') || '-';
-        }
+        },
+        getHeadStatusTitle(type, info) {
+            return `${info.completed ? '已' : '未'}${type === 'CCTask' ? '抄送' : '处理'}`;
+        },
     }
 };
 </script>
@@ -161,7 +167,7 @@ export default {
     color: #26BD71;
 }
 .infoStatus{
-    color: #F24957;
+    color: #337EFF;
 }
 .infoBody{
 
