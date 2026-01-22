@@ -443,7 +443,7 @@ setTimeout(() => {
                         return current.item.userName
                       } else {
                       }
-                    })(nasl.util.HasValue(current.item.displayName))} overflow="ellipsis"></UText>
+                    })(nasl.util.HasValue(current.item.displayName))}></UText>
                   }>
                 </USelect>
               </UFormItem>
