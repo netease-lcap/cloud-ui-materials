@@ -50,7 +50,7 @@ export function genFlProcessButton(node: naslTypes.ViewElement | any) {
     let ${nameGroup.approvalPolicy}: string; //流程按钮加签方式
     let ${
       nameGroup.buttonBody
-    }: { task: String, comment: String, userForOperate: String, policyForAddSign: String, nodeId: String, afterComplete: String }; //流程按钮弹窗body，名称勿改！！！
+    }: { task: String, comment: String, userForOperate: List<String>, policyForAddSign: String, nodeId: String, afterComplete: String }; //流程按钮弹窗body，名称勿改！！！
 
 
     function ${nameGroup.getTaskOperationPermissionsEvent}() {
@@ -159,9 +159,9 @@ if (window.__processDetailFromMixinFormVm__ && window.__processDetailFromMixinFo
         } else if (name === 'withdraw') {
           ${logicNamespace}.withdrawTask(taskId)
         } else if (name === 'addSign') {
-          ${logicNamespace}.addSignTask(taskId, ${nameGroup.buttonBody}.userForOperate, ${nameGroup.buttonBody}.policyForAddSign)
+          ${logicNamespace}.addSignTaskForMultiUser(taskId, ${nameGroup.buttonBody}.userForOperate, ${nameGroup.buttonBody}.policyForAddSign)
         } else if (name === 'reassign') {
-          ${logicNamespace}.reassignTask(taskId, ${nameGroup.buttonBody}.userForOperate)
+          ${logicNamespace}.reassignTaskForMultiUser(taskId, ${nameGroup.buttonBody}.userForOperate)
         } else {
           nasl.js.block(\`'use JSBlock' \nconst operate = name+'Task';
 const body = {
@@ -434,6 +434,7 @@ setTimeout(() => {
                   valueField="userName"
                   initialLoad={true}
                   filterable={true}
+                  multiple={true}
                   slotOption={
                     (current) => <UText text={(function match(_value) {
                       if (_value === true) {
@@ -442,7 +443,7 @@ setTimeout(() => {
                         return current.item.userName
                       } else {
                       }
-                    })(nasl.util.HasValue(current.item.displayName))} overflow="ellipsis"></UText>
+                    })(nasl.util.HasValue(current.item.displayName))}></UText>
                   }>
                 </USelect>
               </UFormItem>

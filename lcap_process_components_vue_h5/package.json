@@ -1,8 +1,8 @@
 {
   "name": "lcap_process_components_vue_h5",
   "private": "true",
-  "version": "1.0.3",
-  "lcapIdeVersion": "3.13",
+  "version": "1.1.0",
+  "lcapIdeVersion": "4.4",
   "title": "流程2.0Vue前端组件依赖库（H5端）",
   "description": "流程2.0Vue前端组件依赖库（H5端）",
   "main": "dist-theme/index.js",

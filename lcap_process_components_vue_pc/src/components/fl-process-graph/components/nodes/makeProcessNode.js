@@ -1,5 +1,5 @@
 import cursorMixin from '../../mixins/cursor-mixin';
-const TASK_NODE = ['UserTask', 'AutoTask', 'ApprovalTask', 'InitiateTask', 'SubmitTask', 'CCTask']
+const TASK_NODE = ['UserTask', 'AutoTask', 'ApprovalTask', 'InitiateTask', 'SubmitTask', 'CCTask', 'CallSubProcess']
 export function makeProcessNode(WrappedComponent) {
     return {
         template: `

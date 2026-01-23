@@ -9,22 +9,20 @@
                     {{ status }}
                 </div>
             </div>
-            <div v-if="completeInfo && completeInfo.length" :class="$style.body">
-                <div v-for="info in completeInfo" :class="$style.info">
+            <div v-if="subProcessInfos && subProcessInfos.length" :class="$style.body">
+                <div v-for="info in subProcessInfos" :class="$style.info">
                     <div :class="$style.infoHeader">
                         <div>
-                            {{ getPersonalTitle(node.type, info) }}
+                            {{ info.subProcInstTitle }}
                         </div>
-                        <div :class="$style.infoStatus" :completed="info.completed">
+                        <div :class="$style.infoStatus" :completed="!!info.endTime">
                             {{ getStatusTitle(node.type, info) }}
                         </div>
                     </div>
                     <div :class="$style.infoBody">
-                        {{ getTimeTitle(node.type, info) }}
+                        发起人：{{ info.initiator ? getDisplayName(info.initiator) : '-' }}
                     </div>
-                    <div :class="$style.infoBody" v-if="node.current && !info.assignee">
-                        处理候选人：{{ getCandidatesTitle(info.candidates) }}
-                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -44,42 +42,22 @@ export default {
             return this.node.title || this.node.name;
         },
         status() {
-            return this.node.current ? '处理中' : this.getHeadStatusTitle(this.node.type, this.node);
+            return this.node.current ? '处理中' : this.getHeadStatusTitle(this.node);
         },
-        completeInfo() {
-            return this.node.completeInfos;
+        subProcessInfos() {
+            return this.node.subProcessInfos;
         }
     },
     methods: {
-        getPersonalTitle(type, info) {
-            const person = type === 'CCTask' ? '被抄送人' : '处理人';
-            let assignee;
-            if (type === 'CCTask') {
-                assignee = this.getCandidatesTitle(info.candidates);
-            } else {
-                assignee = info.assignee ? this.getDisplayName(info.assignee) : '-';
-            }
-            return `${person}：${assignee}`;
-        },
-        getTimeTitle(type, info) {
-            const name = type === 'CCTask' ? '抄送时间' : '处理时间';
-            return `${name}：${info.completeTime || '-'}`
-        },
         getStatusTitle(type, info) {
-            if (type === 'CCTask') {
-                return `${info.completed ? '已抄送' : '未抄送'}`;
-            }
-            return `${info.completed ? '已处理' : '处理中'}`;
+            return `${info.endTime ? '已处理' : '处理中'}`;
         },
         getDisplayName(user) {
             const { userName, displayName } = user || {};
             return displayName ? displayName : userName;
         },
-        getCandidatesTitle(candidates){
-            return (candidates || []).slice(0, 10).map(this.getDisplayName).join('、') || '-';
-        },
-        getHeadStatusTitle(type, info) {
-            return `${info.completed ? '已' : '未'}${type === 'CCTask' ? '抄送' : '处理'}`;
+        getHeadStatusTitle(info) {
+            return `${info.completed ? '已处理' : '未处理'}`;
         },
     }
 };
