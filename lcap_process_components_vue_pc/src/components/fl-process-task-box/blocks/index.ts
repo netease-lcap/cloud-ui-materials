@@ -88,7 +88,14 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string) 
     <ULinearLayout direction="horizontal" mode="inline" style="padding-top:16px;padding-left:16px;padding-bottom:16px;padding-right:16px;min-width:360px;--custom-start: auto; max-width:calc(100vw - 24px);">
       <ULinearLayout direction="horizontal" wrap={true} style="width:100%;padding-bottom:16px;color:#337eff;--custom-start: auto; font-size: 1.17em; font-weight: bold;">
         <UText text="待处理任务 (" style="margin-right:0px;"></UText>
-        <UText text={${nameGroup.configVar}.total} style="margin-right:0px;"></UText>
+        <UText text={(function match(_value) {
+            if (_value === true) {
+                return taskBoxConfig.total
+            } else if (_value === false) {
+                return '0'
+            } else {
+            }
+        })(nasl.util.HasValue(taskBoxConfig.total))} style="margin-right:0px;"></UText>
         <UText text=")"></UText>
       </ULinearLayout>
       <ULinearLayout direction="horizontal" wrap={true} gap="normal" style="--space-base:0px;">
@@ -132,7 +139,7 @@ max-width: calc(100vw - 200px);line-height:1em;"></ULink>
 --list-view-item-background-hover:#f4f6f9;
 --list-view-item-padding: 0px;">
         </UListView>
-        <UPagination total={11} simple={true}
+        <UPagination _if={nasl.util.HasValue(taskBoxConfig.data)} simple={true}
           page={$sync(${nameGroup.configVar}.page)}
           pageSize={$sync(${nameGroup.configVar}.size)}
           totalItems={${nameGroup.configVar}.total}
