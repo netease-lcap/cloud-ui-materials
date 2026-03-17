@@ -190,7 +190,7 @@ export function genSubFormStencilTemplate(
                 ref="${nameGroup.tableNode}"
                 pageSize={20}
                 pageNumber={1}
-                dataSource={$sync(${nameGroup.dataSourceVarName})}
+                dataSource={${nameGroup.dataSourceVarName}}
                 pagination={false}
                 showSizer={true}
                 style="--custom-start: auto; width: min(${width}px, 100%);"
