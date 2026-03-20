@@ -13,6 +13,7 @@ export function genFlProcessButton(node: naslTypes.ViewElement | any) {
     buttonItemVar: view.getVariableUniqueName('processButtonItem'), // 选中的流程按钮
     approvalPolicy: view.getVariableUniqueName('processButtonApprovalPolicy'), // 流程按钮加签方式
     buttonBody: view.getVariableUniqueName('processButtonBody'), // 流程按钮弹窗body，名称勿改！！！
+    rollBackBody: view.getVariableUniqueName('rollBackBody'), // 回退相关参数
     // 页面逻辑
     getTaskOperationPermissionsEvent: view.getLogicUniqueName('getTaskOperationPermissions'), // 获取任务操作权限
     getSignOptionsEvent: view.getLogicUniqueName('getSignOptions'), // 获取加签方式
@@ -51,6 +52,9 @@ export function genFlProcessButton(node: naslTypes.ViewElement | any) {
     let ${
       nameGroup.buttonBody
     }: { task: String, comment: String, userForOperate: List<String>, policyForAddSign: String, nodeId: String, afterComplete: String }; //流程按钮弹窗body，名称勿改！！！
+    let ${
+      nameGroup.rollBackBody
+    }: { selectIndex: Integer, selectList: List<String>, nodeList: List<String>, backNodeDataList: List<{ type: String, index: Integer, items: List<${structureNamespace}.RevertFlowNode> }>, currentItems: { type: String, index: Integer, items: List<${structureNamespace}.RevertFlowNode> } }; //回退相关参数
 
 
     function ${nameGroup.getTaskOperationPermissionsEvent}() {
@@ -155,7 +159,7 @@ if (window.__processDetailFromMixinFormVm__ && window.__processDetailFromMixinFo
     function ${nameGroup.submitButtonEvent}(name: string) {
       (function match(_value) {
         if (name === 'revert') {
-          ${logicNamespace}.revertTask(taskId, ${nameGroup.buttonBody}.nodeId, ${nameGroup.buttonBody}.afterComplete, ${nameGroup.buttonBody}.comment)
+          ${logicNamespace}.revertTaskV2(taskId, ${nameGroup.rollBackBody}.nodeList, ${nameGroup.buttonBody}.afterComplete, ${nameGroup.buttonBody}.comment)
         } else if (name === 'withdraw') {
           ${logicNamespace}.withdrawTask(taskId)
         } else if (name === 'addSign') {
@@ -187,10 +191,18 @@ window.location.reload();\`)
     }//流程按钮提交
 
     function ${nameGroup.getBackNodesEvent}() {
+      let revertFlowNode;
+      let revertNodeItem;
       let result;
-      result = ${logicNamespace}.getBackNodes(taskId)
-      if (nasl.util.HasValue(result)) {
-          ${nameGroup.buttonBody}.nodeId = nasl.util.ListHead(result).nodeId
+      revertFlowNode = ${logicNamespace}.getBackNodesV2(taskId)
+      if (nasl.util.HasValue(revertFlowNode)) {
+        ${nameGroup.buttonBody}.nodeId = nasl.util.ListHead(nasl.util.ListHead(revertFlowNode).items).nodeId;
+        for (const [index, item] of ListEntries(revertFlowNode, 0)) {
+            revertNodeItem = { type: item.type, index: index, items: item.items };
+            nasl.util.Add(result, nasl.util.Clone(revertNodeItem));
+        }
+
+        ${nameGroup.rollBackBody}.backNodeDataList = nasl.util.Clone(result);
       } else {
       }
       return result;
@@ -560,6 +572,15 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string) 
               function click(){
                 if (${nameGroup.buttonItemVar}.name == 'revert') {
                   if ($refs.${nameGroup.revertFormRef}.validated().valid) {
+                    if ((${nameGroup.rollBackBody}.currentItems.type == 'MULTI') && (!(nasl.util.HasValue(${nameGroup.rollBackBody}.selectList)))) {
+                        nasl.ui.showMessage('当前选择节为上一并行节点，请先选择具体节点');
+                    } else {
+                      if (${nameGroup.rollBackBody}.currentItems.type === 'SINGLE') {
+                        ${nameGroup.rollBackBody}.nodeList = nasl.util.ListTransform(${nameGroup.rollBackBody}.currentItems.items, (item) => item.nodeId)
+                      } else if (${nameGroup.rollBackBody}.currentItems.type === 'MULTI') {
+                        ${nameGroup.rollBackBody}.nodeList = nasl.util.ListFilter(${nameGroup.rollBackBody}.selectList, (item) => nasl.util.HasValue(nasl.util.ListFind(${nameGroup.rollBackBody}.currentItems.items, (item1) => item == item1.nodeId)))
+                      }
+                    }
                   } else {
                     if (nasl.util.HasValue(${nameGroup.buttonBody}.nodeId)) {
                     } else {
@@ -600,17 +621,52 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string) 
         >
         <ElFormRadioGroup
           ref="${nameGroup.revertFlowRadioRef}"
-          modelValue={$sync(${nameGroup.buttonBody}.nodeId)}
+          modelValue={$sync(${nameGroup.rollBackBody}.selectIndex)}
           isRequired={true}
           type="default"
           direction="horizontal"
           rules={[nasl.validation.filled()]}
           dataSource={${nameGroup.getBackNodesEvent}()}
-          valueField="nodeId"
-          column={null}
+          valueField="index"
+          column={2}
           style="margin-bottom:24px;width:546px;"
+          onChange={function change() {
+              ${nameGroup.rollBackBody}.currentItems = nasl.util.ListFind(${nameGroup.rollBackBody}.backNodeDataList, (item) => ${nameGroup.rollBackBody}.selectIndex == item.index);
+              if (${nameGroup.rollBackBody}.currentItems.type == 'MULTI') {
+                  nasl.util.Clear(${nameGroup.rollBackBody}.nodeList, 'deep');
+              } else {
+              }
+              return;
+          }}
           slotItem={
-            (current) => <ElText text={current.item.nodeName}></ElText>
+            (current) => <ElFlex
+              direction="horizontal"
+              gutter={4}
+              mode="flex"
+              justify="start"
+              alignment="center"
+              wrap={false}>
+              <ElText
+                  text={(function match(_value) {
+                      if (current.item.type === 'SINGLE') {
+                          return nasl.util.ListHead(current.item.items).nodeName
+                      } else if (current.item.type === 'MULTI') {
+                          return '上一并行节点'
+                      } else {
+                          return '-'
+                      }
+                  })(current.item.type)}
+                  overflow="nowrap" />
+              <ElFormSelect
+                  _if={current.item.type == 'MULTI'}
+                  modelValue={$sync(${nameGroup.rollBackBody}.selectList)}
+                  dataSource={current.item.items}
+                  textField="nodeName"
+                  valueField="nodeId"
+                  multiple={true}
+                  disabled={${nameGroup.rollBackBody}.selectIndex != current.item.index}>
+              </ElFormSelect>
+          </ElFlex>
           }
           slotLabel={
             <ElText text="流转到" display="inline"></ElText>

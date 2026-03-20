@@ -15,6 +15,7 @@ export function genOwProcessButton(node: naslTypes.ViewElement | any) {
     approvalPolicy: view.getVariableUniqueName('processButtonApprovalPolicy'), // 加签方式
     buttonBodyVar: view.getVariableUniqueName('processButtonBody'), // 流程弹窗body，名称勿改！！！
     reassignOrAddSign: view.getVariableUniqueName('reassignOrAddSign'), // 转派或加签人员
+    rollBackBody: view.getVariableUniqueName('rollBackBody'), // 回退相关参数
     // 页面逻辑
     getTaskOperationPermissionsEvent: view.getLogicUniqueName('getTaskOperationPermissions'), // 获取任务操作权限
     getSignOptionsEvent: view.getLogicUniqueName('getSignOptions'), // 获取加签方式
@@ -59,6 +60,9 @@ export function genOwProcessButton(node: naslTypes.ViewElement | any) {
       nameGroup.buttonBodyVar
     }: { task: String, comment: String, userForOperate: List<String>, policyForAddSign: String, nodeId: String, afterComplete: String }; //流程按钮弹窗body，名称勿改！！！
     let ${nameGroup.reassignOrAddSign}: { filterText: String, selectUserList: List<String> }; //转派或加签人员
+    let ${
+      nameGroup.rollBackBody
+    }: { selectIndex: Integer, selectList: List<String>, nodeList: List<String>, backNodeDataList: List<{ type: String, index: Integer, items: List<${structureNamespace}.RevertFlowNode> }>, currentItems: { type: String, index: Integer, items: List<${structureNamespace}.RevertFlowNode> } }; //回退相关参数
 
     function ${nameGroup.getTaskOperationPermissionsEvent}() {
       let ${nameGroup.permissionDetailsVar}
@@ -171,7 +175,7 @@ if (window.__processDetailFromMixinFormVm__ && window.__processDetailFromMixinFo
     function ${nameGroup.submitButtonEvent}(name: string) {
       (function match(_value) {
         if (name === 'revert') {
-          ${logicNamespace}.revertTask(taskId, ${nameGroup.buttonBodyVar}.nodeId, ${nameGroup.buttonBodyVar}.afterComplete, ${nameGroup.buttonBodyVar}.comment)
+          ${logicNamespace}.revertTaskV2(taskId, ${nameGroup.rollBackBody}.nodeList, ${nameGroup.buttonBodyVar}.afterComplete, ${nameGroup.buttonBodyVar}.comment)
         } else if (name === 'withdraw') {
           ${logicNamespace}.withdrawTask(taskId)
         } else if (name === 'addSign') {
@@ -204,10 +208,18 @@ window.location.reload();\`)
     }//流程按钮提交
 
     function ${nameGroup.getBackNodesEvent}() {
+      let revertFlowNode;
+      let revertNodeItem;
       let result;
-      result = ${logicNamespace}.getBackNodes(taskId)
-      if (nasl.util.HasValue(result)) {
-          ${nameGroup.buttonBodyVar}.nodeId = nasl.util.ListHead(result).nodeId
+      revertFlowNode = ${logicNamespace}.getBackNodesV2(taskId)
+      if (nasl.util.HasValue(revertFlowNode)) {
+        ${nameGroup.buttonBodyVar}.nodeId = nasl.util.ListHead(nasl.util.ListHead(revertFlowNode).items).nodeId;
+        for (const [index, item] of ListEntries(revertFlowNode, 0)) {
+            revertNodeItem = { type: item.type, index: index, items: item.items };
+            nasl.util.Add(result, nasl.util.Clone(revertNodeItem));
+        }
+
+        ${nameGroup.rollBackBody}.backNodeDataList = nasl.util.Clone(result);
       } else {
       }
       return result;
@@ -477,23 +489,60 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string) 
 
           <VanFormRadioGroup
             ref="${nameGroup.revertFlowRadioRef}"
-            style="width:100%;"
+            style="width:100%;--van-radio-size:24px;"
             _if={${nameGroup.buttonItemVar}.name == 'revert'}
-            dataSource={${logicNamespace}.getBackNodes(taskId)}
-            modelValue={$sync(${nameGroup.buttonBodyVar}.nodeId)}
-            textField="nodeName"
-            valueField="nodeId"
+            dataSource={${nameGroup.getBackNodesEvent}()}
+            modelValue={$sync(${nameGroup.rollBackBody}.selectIndex)}
+            valueField="index"
             labelAlign="top"
             direction="vertical"
             required={true}
             rules={[nasl.validation.filled()]}
             filterable={true}
             optionSlot={true}
+            onChange={function change() {
+              ${nameGroup.rollBackBody}.currentItems = nasl.util.ListFind(${nameGroup.rollBackBody}.backNodeDataList, (item) => item.index == ${nameGroup.rollBackBody}.selectIndex);
+              if (${nameGroup.rollBackBody}.currentItems.type == 'MULTI') {
+                  nasl.util.Clear(${nameGroup.rollBackBody}.nodeList, 'deep');
+              } else {
+              }
+              return;
+            }}
             slotLabel={
               <VanText text="流转到"></VanText>
             }
             slotItem={
-              (current) => <VanText style="font-weight:bold;--custom-start: auto; font-size: 3.7333vw;" text={current.item.nodeName}></VanText>
+              (current) => <VanFlex
+                gutter={0}
+                mode="block"
+                style="padding-top:4px;padding-bottom:4px;width:100%;">
+                <VanText
+                    text={(function match(_value) {
+                        if (current.item.type === 'SINGLE') {
+                            return nasl.util.ListHead(current.item.items).nodeName
+                        } else if (current.item.type === 'MULTI') {
+                            return '上一并行节点'
+                        } else {
+                            return '-'
+                        }
+                    })(current.item.type)}
+                    style="width:100%;font-size:14px;margin-top:0px;padding-top:4px;" />
+                <VanFlex
+                    _if={current.item.type == 'MULTI'}
+                    justify="space-between"
+                    alignment="center"
+                    wrap={false}
+                    onClick={function click() {
+                        $refs.${nameGroup.userPopupRef}.open();
+                        return;
+                    }}
+                    style="height:32px;width:100%;">
+                    <VanText
+                        text="请选择节点" />
+                    <VanIcon
+                        name="arrow" />
+                </VanFlex>
+            </VanFlex>
             }
           ></VanFormRadioGroup>
 
@@ -571,7 +620,15 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string) 
           onClick={
             function click(){
               if ($refs.${nameGroup.formButtonPopupRef}.validated().valid) {
-                ${nameGroup.submitButtonEvent}(${nameGroup.buttonItemVar}.name)
+                if ((${nameGroup.rollBackBody}.currentItems.type == 'MULTI') && (!(nasl.util.HasValue(${nameGroup.rollBackBody}.selectList)))) {
+                  nasl.ui.showMessage('当前选择节为上一并行节点，请先选择具体节点');
+                } else {
+                  if (${nameGroup.rollBackBody}.currentItems.type === 'SINGLE') {
+                      ${nameGroup.rollBackBody}.nodeList = nasl.util.ListTransform(${nameGroup.rollBackBody}.currentItems.items, (item) => item.nodeId)
+                  } else if (${nameGroup.rollBackBody}.currentItems.type === 'MULTI') {
+                      ${nameGroup.rollBackBody}.nodeList = nasl.util.ListFilter(${nameGroup.rollBackBody}.selectList, (item) => nasl.util.HasValue(nasl.util.ListFind(${nameGroup.rollBackBody}.currentItems.items, (item1) => item == item1.nodeId)))
+                  }
+                }
               } else {
                 if (nasl.util.HasValue(${nameGroup.buttonBodyVar}.nodeId)) {
                 } else {
