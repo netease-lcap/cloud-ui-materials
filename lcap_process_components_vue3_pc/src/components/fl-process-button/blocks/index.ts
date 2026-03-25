@@ -387,6 +387,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string) 
           modelValue={$sync(${nameGroup.buttonBody}.comment)}
           type="textarea"
           isRequired={${nameGroup.buttonItemVar}.commentRequired}
+          ignoreRules={!(${nameGroup.buttonItemVar}.commentRequired)}
           rules={[nasl.validation.filled()]}
           labelWidth=""
           style="width:100%;margin-bottom:3px;"
@@ -698,6 +699,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string) 
           showPrepend={false}
           rules={[nasl.validation.filled()]}
           isRequired={${nameGroup.buttonItemVar}.commentRequired}
+          ignoreRules={!(${nameGroup.buttonItemVar}.commentRequired)}
           labelWidth=""
           trigger="blur"
           style="margin-top:4px;width:100%;"
