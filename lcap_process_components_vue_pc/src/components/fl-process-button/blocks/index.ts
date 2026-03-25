@@ -13,6 +13,7 @@ export function genFlProcessButton(node: naslTypes.ViewElement | any) {
     buttonItemVar: view.getVariableUniqueName('processButtonItem'), // 选中的流程按钮
     approvalPolicy: view.getVariableUniqueName('processButtonApprovalPolicy'), // 流程按钮加签方式
     buttonBody: view.getVariableUniqueName('processButtonBody'), // 流程按钮弹窗body，名称勿改！！！
+    rollBackBody: view.getVariableUniqueName('rollBackBody'), // 回退相关参数
     // 页面逻辑
     getTaskOperationPermissionsEvent: view.getLogicUniqueName('getTaskOperationPermissions'), // 获取任务操作权限
     getSignOptionsEvent: view.getLogicUniqueName('getSignOptions'), // 获取加签方式
@@ -51,6 +52,9 @@ export function genFlProcessButton(node: naslTypes.ViewElement | any) {
     let ${
       nameGroup.buttonBody
     }: { task: String, comment: String, userForOperate: List<String>, policyForAddSign: String, nodeId: String, afterComplete: String }; //流程按钮弹窗body，名称勿改！！！
+    let ${
+      nameGroup.rollBackBody
+    }: { selectIndex: Integer, selectList: List<String>, nodeList: List<String>, backNodeDataList: List<{ type: String, index: Integer, items: List<${structureNamespace}.RevertFlowNode> }>, currentItems: { type: String, index: Integer, items: List<${structureNamespace}.RevertFlowNode> } }; //回退相关参数
 
 
     function ${nameGroup.getTaskOperationPermissionsEvent}() {
@@ -155,7 +159,7 @@ if (window.__processDetailFromMixinFormVm__ && window.__processDetailFromMixinFo
     function ${nameGroup.submitButtonEvent}(name: string) {
       (function match(_value) {
         if (name === 'revert') {
-          ${logicNamespace}.revertTask(taskId, ${nameGroup.buttonBody}.nodeId, ${nameGroup.buttonBody}.afterComplete, ${nameGroup.buttonBody}.comment)
+          ${logicNamespace}.revertTaskV2(taskId, ${nameGroup.rollBackBody}.nodeList, ${nameGroup.buttonBody}.afterComplete, ${nameGroup.buttonBody}.comment)
         } else if (name === 'withdraw') {
           ${logicNamespace}.withdrawTask(taskId)
         } else if (name === 'addSign') {
@@ -187,10 +191,18 @@ window.location.reload();\`)
     }//流程按钮提交
 
     function ${nameGroup.getBackNodesEvent}() {
+      let revertFlowNode;
+      let revertNodeItem;
       let result;
-      result = ${logicNamespace}.getBackNodes(taskId)
-      if (nasl.util.HasValue(result)) {
-          ${nameGroup.buttonBody}.nodeId = nasl.util.ListHead(result).nodeId
+      revertFlowNode = ${logicNamespace}.getBackNodesV2(taskId)
+      if (nasl.util.HasValue(revertFlowNode)) {
+        ${nameGroup.buttonBody}.nodeId = nasl.util.ListHead(nasl.util.ListHead(revertFlowNode).items).nodeId;
+        for (const [index, item] of ListEntries(revertFlowNode, 0)) {
+            revertNodeItem = { type: item.type, index: index, items: item.items };
+            nasl.util.Add(result, nasl.util.Clone(revertNodeItem));
+        }
+
+        ${nameGroup.rollBackBody}.backNodeDataList = nasl.util.Clone(result);
       } else {
       }
       return result;
@@ -469,6 +481,15 @@ setTimeout(() => {
               function click(){
                 if (${nameGroup.buttonItemVar}.name == 'revert') {
                   if ($refs.${nameGroup.revertFormRef}.validate(undefined, undefined).valid) {
+                    if ((${nameGroup.rollBackBody}.currentItems.type == 'MULTI') && (!(nasl.util.HasValue(${nameGroup.rollBackBody}.selectList)))) {
+                        nasl.ui.showMessage('当前选择节为上一并行节点，请先选择具体节点');
+                    } else {
+                      if (${nameGroup.rollBackBody}.currentItems.type === 'SINGLE') {
+                        ${nameGroup.rollBackBody}.nodeList = nasl.util.ListTransform(${nameGroup.rollBackBody}.currentItems.items, (item) => item.nodeId)
+                      } else if (${nameGroup.rollBackBody}.currentItems.type === 'MULTI') {
+                        ${nameGroup.rollBackBody}.nodeList = nasl.util.ListFilter(${nameGroup.rollBackBody}.selectList, (item) => nasl.util.HasValue(nasl.util.ListFind(${nameGroup.rollBackBody}.currentItems.items, (item1) => item == item1.nodeId)))
+                      }
+                    }
                   } else {
                     if (nasl.util.HasValue(${nameGroup.buttonBody}.nodeId)) {
                     } else {
@@ -511,11 +532,41 @@ setTimeout(() => {
                 <URadios
                   ref="${nameGroup.revertFlowRadioRef}"
                   style="width:546px;--radio-space-y:8px;--radio-space-x:40px;margin-top:4px;"
-                  value={$sync(${nameGroup.buttonBody}.nodeId)}
+                  value={$sync(${nameGroup.rollBackBody}.selectIndex)}
                   dataSource={${nameGroup.getBackNodesEvent}()}
-                  valueField="nodeId"
+                  valueField="index"
+                  onSelect={function select() {
+                      ${nameGroup.rollBackBody}.currentItems = nasl.util.ListFind(${nameGroup.rollBackBody}.backNodeDataList, (item) => ${nameGroup.rollBackBody}.selectIndex == item.index);
+                      if (${nameGroup.rollBackBody}.currentItems.type == 'MULTI') {
+                          nasl.util.Clear(${nameGroup.rollBackBody}.nodeList, 'deep');
+                      } else {
+                      }
+                      return;
+                  }}
                   slotItem={
-                    (current) => <UText text={current.item.nodeName}></UText>
+                    (current) =><>
+                    <UText
+                      text={(function match(_value) {
+                          if (current.item.type === 'MULTI') {
+                              return '上一并行节点'
+                          } else {
+                              return nasl.util.ListHead(current.item.items).nodeName
+                          }
+                      })(current.item.type)} />
+                  <USelect
+                      _if={current.item.type == 'MULTI'}
+                      placeholder="请选择"
+                      pagination={true}
+                      pageSize={50}
+                      emptyValueIsNull={true}
+                      value={$sync(${nameGroup.rollBackBody}.selectList)}
+                      sorting={"{ field: undefined, order: 'asc' }"}
+                      dataSource={current.item.items}
+                      textField="nodeName"
+                      valueField="nodeId"
+                      multiple={true}
+                      disabled={${nameGroup.rollBackBody}.selectIndex != current.item.index} />
+                    </>
                   }>
                 </URadios>
               </UFormItem>

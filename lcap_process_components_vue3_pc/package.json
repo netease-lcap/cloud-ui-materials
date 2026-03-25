@@ -1,8 +1,8 @@
 {
   "name": "lcap_process_components_vue3_pc",
   "private": true,
-  "version": "1.0.0",
-  "lcapIdeVersion": "4.3",
+  "version": "1.1.0",
+  "lcapIdeVersion": "4.4",
   "main": "dist-theme/index.js",
   "module": "dist-theme/index.mjs",
   "title": "Vue3前端流程组件依赖库-PC端",
