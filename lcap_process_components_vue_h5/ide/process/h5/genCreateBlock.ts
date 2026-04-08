@@ -1,6 +1,7 @@
 import * as naslTypes from '@nasl/ast-mini';
 import type { ProcessV2 } from '../index';
-import {  genProcessV2LaunchLogic } from './utils';
+import { genViewVariables, genProcessV2LaunchLogic } from './utils';
+import { getSubFormConfig, genSubFormStencilTemplate } from './subForm';
 
 import {
   filterProperty,
@@ -15,9 +16,18 @@ function genCreateFormTemplate(
   entity: naslTypes.Entity,
   nameGroup: NameGroup,
   selectNameGroupMap: Map<string, NameGroup>,
+  variableConfigList: Array<any>,
+  likeComponent: naslTypes.View,
+  newLogics: Array<string>
 ) {
   const properties = entity.properties.filter(filterProperty('inForm'));
   nameGroup.vModelName = nameGroup.viewVariableEntity;
+  const submitArgs = variableConfigList
+    .map((variableConfig) => {
+      const { varName, isMainEntity } = variableConfig;
+      return isMainEntity ? varName : `${varName}List`;
+    })
+    .join(', ');
 
   return `<VanCardu
     slotHead={
@@ -26,11 +36,12 @@ function genCreateFormTemplate(
   >
     <VanForm ref="${nameGroup.viewElementMainView}">
       ${genFormItemsTemplate(entity, properties, nameGroup, selectNameGroupMap)}
+      ${genSubFormStencilTemplate(entity, likeComponent, variableConfigList, selectNameGroupMap, newLogics, false)}
       <VanButton round block="blockb" type="info" text="提交流程"
         onClick={
           function ${nameGroup.viewLogicSubmit}(event) {
             if ($refs.${nameGroup.viewElementMainView}.validate().valid) {
-              app.logics.${nameGroup.processLaunch}(${nameGroup.viewVariableEntity})
+              app.logics.${nameGroup.processLaunch}(${submitArgs})
               nasl.ui.showMessage('创建成功！')
             }
           }
@@ -105,18 +116,34 @@ export function genH5CreateBlock(
       }
     }
   });
+  // 页面上的局部变量
+  const variableConfigList = [
+    {
+      name: 'data',
+      varName: nameGroup.viewVariableEntity, // 局部变量名为实体名的首字母小写
+      entity,
+      type: entityFullName,
+      isMainEntity: true, // 是否是主实体
+      processName: '',
+    },
+  ];
   if (process) {
+    // step1: 获取子表单配置
+    const subFormConfigList = getSubFormConfig(process);
+    variableConfigList.push(...subFormConfigList);
+    // step2: 生成流程launch逻辑
     const processV2LunchLogic = genProcessV2LaunchLogic(
-      entityFullName,
+      entity,
       process,
       nameGroup,
+      variableConfigList,
     );
     newLogics.push(processV2LunchLogic);
   }
 
   return `export function view() {
-    let ${nameGroup.viewVariableEntity}: ${entityFullName};
-    return ${genCreateFormTemplate(entity, nameGroup, selectNameGroupMap)}
+    ${genViewVariables(variableConfigList, false)}
+    return ${genCreateFormTemplate(entity, nameGroup, selectNameGroupMap, variableConfigList, likeComponent, newLogics)}
   }
     export namespace app.logics {
         ${newLogics.join('\n')}

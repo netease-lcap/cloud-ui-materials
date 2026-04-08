@@ -74,7 +74,7 @@ export function genProcessV2LaunchLogic(
     .map((variableConfig, index) => {
       return variableConfig.isMainEntity
         ? `data: variable1`
-        : `${variableConfig.name}: param${
+        : `relation_data${index - 1 === 0 ? '' : `_${index - 1}`}: param${
             index + 1
           }`;
     })

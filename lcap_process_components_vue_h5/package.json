@@ -47,6 +47,7 @@
     "@types/lodash": "^4.14.202",
     "@vue/test-utils": "^1.3.5",
     "autoprefixer": "^10.4.16",
+    "fs-extra": "^11.3.3",
     "jest-serializer-vue-tjw": "^3.20.0",
     "jsdom": "^23.0.1",
     "marked": "^12.0.1",
@@ -63,5 +64,9 @@
   },
   "peerDependencies": {
     "vue": "^2.6.0"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "^6.0.3",
+    "@vitejs/plugin-vue-jsx": "^5.1.3"
   }
 }
