@@ -23,9 +23,6 @@ importers:
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
-      fs-extra:
-        specifier: ^11.3.3
-        version: 11.3.3
     devDependencies:
       '@lcap/builder':
         specifier: ^1.6.2
@@ -3572,8 +3569,8 @@ packages:
     resolution: {integrity: sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==}
     engines: {node: '>=14.14'}
 
-  fs-extra@11.3.3:
-    resolution: {integrity: sha512-VWSRii4t0AFm6ixFFmLLx1t7wS1gh+ckoa84aOeapGum0h+EZd1EhEumSB+ZdDLnEPuucsVB9oB7cxJHap6Afg==}
+  fs-extra@11.2.0:
+    resolution: {integrity: sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==}
     engines: {node: '>=14.14'}
 
   fs-extra@8.1.0:
@@ -7825,7 +7822,7 @@ snapshots:
       '@storybook/react-dom-shim': 7.6.20(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
       '@storybook/theming': 7.6.20(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
       '@storybook/types': 7.6.20
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       react: 16.14.0
       react-dom: 16.14.0(react@16.14.0)
       remark-external-links: 8.0.0
@@ -7955,7 +7952,7 @@ snapshots:
       esbuild-plugin-alias: 0.2.1
       express: 4.21.2
       find-cache-dir: 3.3.2
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       process: 0.11.10
       util: 0.12.5
     transitivePeerDependencies:
@@ -7977,7 +7974,7 @@ snapshots:
       esbuild-plugin-alias: 0.2.1
       express: 4.21.2
       find-cache-dir: 3.3.2
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       process: 0.11.10
       util: 0.12.5
     transitivePeerDependencies:
@@ -7999,7 +7996,7 @@ snapshots:
       es-module-lexer: 0.9.3
       express: 4.21.2
       find-cache-dir: 3.3.2
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       magic-string: 0.30.17
       rollup: 3.29.5
       vite: 5.4.11(@types/node@22.10.5)
@@ -8024,7 +8021,7 @@ snapshots:
       es-module-lexer: 0.9.3
       express: 4.21.2
       find-cache-dir: 3.3.2
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       magic-string: 0.30.17
       rollup: 3.29.5
       vite: 5.4.11(@types/node@22.10.5)
@@ -8077,7 +8074,7 @@ snapshots:
       execa: 5.1.1
       express: 4.21.2
       find-up: 5.0.0
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       get-npm-tarball-url: 2.1.0
       get-port: 5.1.1
       giget: 1.2.3
@@ -8165,7 +8162,7 @@ snapshots:
       file-system-cache: 2.3.0
       find-cache-dir: 3.3.2
       find-up: 5.0.0
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       glob: 10.4.5
       handlebars: 4.7.8
       lazy-universal-dotenv: 4.0.0
@@ -8194,7 +8191,7 @@ snapshots:
       file-system-cache: 2.3.0
       find-cache-dir: 3.3.2
       find-up: 5.0.0
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       glob: 10.4.5
       handlebars: 4.7.8
       lazy-universal-dotenv: 4.0.0
@@ -8243,7 +8240,7 @@ snapshots:
       compression: 1.7.5
       detect-port: 1.6.1
       express: 4.21.2
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       globby: 11.1.0
       ip: 2.0.1
       lodash: 4.17.21
@@ -8292,7 +8289,7 @@ snapshots:
       compression: 1.7.5
       detect-port: 1.6.1
       express: 4.21.2
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       globby: 11.1.0
       lodash: 4.17.21
       open: 8.4.2
@@ -8335,7 +8332,7 @@ snapshots:
       '@babel/types': 7.26.3
       '@storybook/csf': 0.1.13
       '@storybook/types': 7.6.17
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       recast: 0.23.9
       ts-dedent: 2.2.0
     transitivePeerDependencies:
@@ -8349,7 +8346,7 @@ snapshots:
       '@babel/types': 7.26.3
       '@storybook/csf': 0.1.13
       '@storybook/types': 7.6.20
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       recast: 0.23.9
       ts-dedent: 2.2.0
     transitivePeerDependencies:
@@ -8488,7 +8485,7 @@ snapshots:
       chalk: 4.1.2
       detect-package-manager: 2.0.1
       fetch-retry: 5.0.6
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       read-pkg-up: 7.0.1
     transitivePeerDependencies:
       - encoding
@@ -8502,7 +8499,7 @@ snapshots:
       chalk: 4.1.2
       detect-package-manager: 2.0.1
       fetch-retry: 5.0.6
-      fs-extra: 11.3.3
+      fs-extra: 11.2.0
       read-pkg-up: 7.0.1
     transitivePeerDependencies:
       - encoding
@@ -10119,7 +10116,7 @@ snapshots:
       jsonfile: 6.1.0
       universalify: 2.0.1
 
-  fs-extra@11.3.3:
+  fs-extra@11.2.0:
     dependencies:
       graceful-fs: 4.2.11
       jsonfile: 6.1.0
