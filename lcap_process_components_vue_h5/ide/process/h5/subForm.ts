@@ -196,7 +196,7 @@ export function genSubFormStencilTemplate(
                               <VanLinearLayout wrap={true}>
                                 <VanText text={\`数据\${current.index + 1}\`}></VanText>
                               </VanLinearLayout>
-                              <VanLinearLayout wrap={true}>
+                              <VanLinearLayout wrap={true} subFormInitialColumn="action">
                                 <VanLink
                                   text="删除"
                                   subFormBtnType="delete"

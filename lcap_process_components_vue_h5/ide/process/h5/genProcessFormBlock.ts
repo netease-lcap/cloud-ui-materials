@@ -60,8 +60,6 @@ export function genH5ProcessFormBlock(entity: naslTypes.Entity, source: any, par
     const subFormConfigList = getSubFormConfig(process, source, likeComponent);
     variableConfigList.push(...subFormConfigList);
   }
-  debugger;
-
   return `export function view() {
     ${genViewVariables(variableConfigList, true)}
     return ${genCreateFormTemplate(entity, selectedProperties, source, nameGroup, selectNameGroupMap, variableConfigList, likeComponent, newLogics)}
