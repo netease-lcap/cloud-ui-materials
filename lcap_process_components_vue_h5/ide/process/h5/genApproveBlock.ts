@@ -1,5 +1,7 @@
 import * as naslTypes from '@nasl/ast-mini';
 import type { ProcessV2 } from '../index';
+import { genViewVariables } from './utils';
+import { getSubFormConfig, genSubFormStencilTemplate } from './subForm';
 
 import {
   filterProperty,
@@ -68,8 +70,16 @@ export function genH5ApproveBlock(
       }
     }
   });
+  // 页面上的局部变量
+  const variableConfigList = [] as any[];
+  if (process) {
+    // 获取子表单配置
+    const subFormConfigList = getSubFormConfig(process);
+    variableConfigList.push(...subFormConfigList);
+  }
   return `export function view() {
-    return ${genCreateFormTemplate(entity, nameGroup, selectNameGroupMap)}
+    ${genViewVariables(variableConfigList, true)}
+    return ${genCreateFormTemplate(entity, nameGroup, selectNameGroupMap, variableConfigList, likeComponent, newLogics)}
   }
     export namespace app.logics {
         ${newLogics.join('\n')}
@@ -81,6 +91,9 @@ function genCreateFormTemplate(
   entity: naslTypes.Entity,
   nameGroup: NameGroup,
   selectNameGroupMap: Map<string, NameGroup>,
+  variableConfigList: Array<any>,
+  likeComponent: naslTypes.View,
+  newLogics: Array<string>
 ) {
   // 审批页面中需要额外显示的属性
   const extraProperties = [
@@ -109,11 +122,12 @@ function genCreateFormTemplate(
           processPrefix="${nameGroup.processPrefix}"
         >
           ${genFormItemsTemplate(
-            entity,
-            properties,
-            nameGroup,
-            selectNameGroupMap,
-          )}
+    entity,
+    properties,
+    nameGroup,
+    selectNameGroupMap,
+  )}
+          ${genSubFormStencilTemplate(entity, likeComponent, variableConfigList, selectNameGroupMap, newLogics, true)}
         </VanForm>
       </VanTab>
       <VanTab slotTitle={

@@ -1,5 +1,7 @@
 import * as naslTypes from '@nasl/ast-mini';
 import type { ProcessV2 } from '../index';
+import { genViewVariables } from './utils';
+import { getSubFormConfig, genSubFormStencilTemplate } from './subForm';
 
 import { filterProperty, firstLowerCase, getFirstDisplayedProperty, genUniqueQueryNameGroup, NameGroup } from './blocks/utils';
 import { genQueryLogic, genFormItemsTemplate } from './blocks/genCommonBlock';
@@ -26,7 +28,7 @@ export function genH5ProcessFormBlock(entity: naslTypes.Entity, source: any, par
     processPrefix: process.name,
   };
 
-  const selectedProperties = source[entity.name];
+  const selectedProperties = source[entity.name] || [];
 
   // 收集所有和本实体关联的实体
   const selectNameGroupMap = new Map();
@@ -51,8 +53,16 @@ export function genH5ProcessFormBlock(entity: naslTypes.Entity, source: any, par
     }
   });
 
+  // 页面上的局部变量
+  const variableConfigList = [] as any[];
+  if (process) {
+    // 获取子表单配置
+    const subFormConfigList = getSubFormConfig(process, source, likeComponent);
+    variableConfigList.push(...subFormConfigList);
+  }
   return `export function view() {
-    return ${genCreateFormTemplate(entity, selectedProperties, nameGroup, selectNameGroupMap)}
+    ${genViewVariables(variableConfigList, true)}
+    return ${genCreateFormTemplate(entity, selectedProperties, source, nameGroup, selectNameGroupMap, variableConfigList, likeComponent, newLogics)}
   }
     export namespace app.logics {
         ${newLogics.join('\n')}
@@ -63,8 +73,12 @@ export function genH5ProcessFormBlock(entity: naslTypes.Entity, source: any, par
 function genCreateFormTemplate(
   entity: naslTypes.Entity,
   selectedProperties: Array<naslTypes.EntityProperty>,
+  source: any,
   nameGroup: NameGroup,
-  selectNameGroupMap: Map<string, NameGroup>
+  selectNameGroupMap: Map<string, NameGroup>,
+  variableConfigList: Array<any>,
+  likeComponent: naslTypes.View,
+  newLogics: Array<string>
 ) {
   nameGroup.vModelName = nameGroup.viewVariableEntity;
 
@@ -74,5 +88,6 @@ function genCreateFormTemplate(
     processPrefix="${nameGroup.processPrefix}"
   >
     ${genFormItemsTemplate(entity, selectedProperties, nameGroup, selectNameGroupMap)}
+    ${genSubFormStencilTemplate(entity, likeComponent, variableConfigList, selectNameGroupMap, newLogics, true, source)}
   </VanForm>`;
 }
