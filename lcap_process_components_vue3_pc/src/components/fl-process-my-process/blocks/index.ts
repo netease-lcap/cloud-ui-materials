@@ -130,7 +130,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
             <ElFlex direction="horizontal" mode="flex" justify="end" alignment="center" gutter={0} style="margin-bottom:20px;margin-right:16px;position:relative;left:0;top:0;">
               <ElText text="发起时间" widthStretch="false" style="text-align:right;padding-right:20px;width:62px;"></ElText>
               <ElDatePicker
-                type="daterange"
+                type="datetimerange"
                 placeholder="请选择日期"
                 startPlaceholder="开始日期"
                 endPlaceholder="结束日期"
@@ -325,7 +325,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
             <ElFlex direction="horizontal" mode="flex" justify="end" alignment="center" gutter={0} style="margin-bottom:20px;margin-right:16px;position:relative;left:0;top:0;">
               <ElText text="发起时间" widthStretch="false" style="text-align:right;padding-right:20px;width:62px;"></ElText>
               <ElDatePicker
-                type="daterange"
+                type="datetimerange"
                 placeholder="请选择日期"
                 startPlaceholder="开始日期"
                 endPlaceholder="结束日期"
@@ -520,7 +520,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
             <ElFlex direction="horizontal" mode="flex" justify="end" alignment="center" gutter={0} style="margin-bottom:20px;margin-right:16px;position:relative;left:0;top:0;">
               <ElText text="发起时间" widthStretch="false" style="text-align:right;padding-right:20px;width:62px;"></ElText>
               <ElDatePicker
-                type="daterange"
+                type="datetimerange"
                 placeholder="请选择日期"
                 startPlaceholder="开始日期"
                 endPlaceholder="结束日期"
@@ -718,7 +718,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
             <ElFlex direction="horizontal" mode="flex" justify="end" alignment="center" gutter={0} style="margin-bottom:20px;margin-right:16px;position:relative;left:0;top:0;">
               <ElText text="发起时间" widthStretch="false" style="text-align:right;padding-right:20px;width:62px;"></ElText>
               <ElDatePicker
-                type="daterange"
+                type="datetimerange"
                 placeholder="请选择日期"
                 startPlaceholder="开始日期"
                 endPlaceholder="结束日期"
