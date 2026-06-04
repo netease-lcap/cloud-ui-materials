@@ -1,18 +1,20 @@
+import { h } from 'vue';
 import cursorMixin from '../../mixins/cursor-mixin';
 const TASK_NODE = ['UserTask', 'AutoTask', 'ApprovalTask', 'InitiateTask', 'SubmitTask', 'CCTask', 'CallSubProcess']
 export function makeProcessNode(WrappedComponent) {
     return {
         inheritAttrs: false,
-        template: `
-            <wrapped
-                @instancePressStart="onInstancePressStart"
-                @instancemousemove="onMousemove"
-                @mouseenter="onEnter"
-                @mouseleave="onLeave"
-                :node="node"
-                :isHover="isHover"
-                v-bind="$attrs" />
-        `,
+        render() {
+            return h(WrappedComponent, {
+                ...this.$attrs,
+                node: this.node,
+                isHover: this.isHover,
+                onInstancePressStart: this.onInstancePressStart,
+                onInstancemousemove: this.onMousemove,
+                onMouseenter: this.onEnter,
+                onMouseleave: this.onLeave,
+            });
+        },
         mixins: [cursorMixin],
         inject: [
             'setHover',
@@ -20,9 +22,6 @@ export function makeProcessNode(WrappedComponent) {
             'poppups',
             'closePoppup',
         ],
-        components: {
-            wrapped: WrappedComponent,
-        },
         props: {
             node: Object,
         },
