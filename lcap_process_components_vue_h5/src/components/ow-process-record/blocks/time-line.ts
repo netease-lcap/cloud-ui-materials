@@ -17,7 +17,7 @@ export function genOwProcessRecordTimeline(node: naslTypes.ViewElement | any) {
   const hasTaskIdParam = view.params.some((param: any) => param.name === 'taskId');
 
   return `export function view(${hasTaskIdParam ? '' : `taskId: string`}) {
-    let ${nameGroup.dataLength}: Long = 0; //流程记录数据长度
+    let ${nameGroup.dataLength}: Integer = 0; //流程记录数据长度
     let ${nameGroup.isUnfold}: Boolean = false; //预测节点是否展开
 
     function ${nameGroup.getRecordsEvent}() {
@@ -57,7 +57,6 @@ export function genTemplate(nameGroup: Record<string, string>) {
     dataSource={${nameGroup.getRecordsEvent}()}
     hiddenempty={false}
     scrollTarget="self"
-    dataSourceWatch={[]}
     style="border-color:#c06161;borderTopColor:#c06161;borderBottomColor:#c06161;borderLeftColor:#c06161;borderRightColor:#c04e4e;height:100%;--custom-start: auto; min-height: 26.66667vw;
 overflow: scroll;
 margin-top: 2.66667vw;
@@ -80,18 +79,29 @@ font-size: 3.73333vw;">
         <VanLinearLayout
           _if={(current.item.type == "ProcInstText") && (!(${nameGroup.isUnfold}))}
           wrap={true} mode="flex" justify="start" alignment="center" gap="normal">
-          <VanIconv name="time" icotype="only">
+          <VanIconv name="time" icotype="only" style=" --custom-start: auto; font-size: var(--van-step-icon-size);
+width: 1.1em;
+height: 1.1em;
+vertical-align: -.15em;
+fill: currentColor;
+line-height: 1.1em;">
             <VanText text="图标"></VanText>
           </VanIconv>
           <VanLinearLayout
             direction="horizontal" wrap={false} mode="flex" justify="start" alignment="center"
+            style="margin-left:25px;"
             onClick={function click() {
               ${nameGroup.isUnfold} = true
             }}>
-            <VanIconv name="bottom-arrow" icotype="only">
+            <VanIconv name="bottom-arrow" icotype="only" style="margin-right:10px;color:#3377ff; --custom-start: auto; font-size: var(--van-step-icon-size);
+width: 1.1em;
+height: 1.1em;
+vertical-align: -.15em;
+fill: currentColor;
+line-height: 1.1em;">
               <VanText text="图标"></VanText>
             </VanIconv>
-            <VanText text="预测节点"></VanText>
+            <VanText text="预测节点" style="color:#3377ff;"></VanText>
           </VanLinearLayout>
         </VanLinearLayout>
 
@@ -149,7 +159,13 @@ line-height: 1.1em;"
             </VanIconv>
             <VanIconv
               _if={(current.item.type != "History") && (current.item.type != "Current")}
-              name="time" icotype="only">
+              name="time" icotype="only"
+              style="--custom-start: auto; font-size: var(--van-step-icon-size);
+width: 1.1em;
+height: 1.1em;
+vertical-align: -.15em;
+fill: currentColor;
+line-height: 1.1em;">
               <VanText text="图标"></VanText>
             </VanIconv>
             <VanText overflow="ellipsis" widthStretch="false"
@@ -171,7 +187,8 @@ line-height: 1.2em;"
             </VanText>
             <VanText
               _if={current.item.type == "Prediction"}
-              text="预测">
+              text="预测"
+              style="padding-left:8px;padding-right:8px;padding-top:2px;padding-bottom:2px;background-color:#F2F3F5;color:#999999;border-top-left-radius:4px;border-bottom-left-radius:4px;border-top-right-radius:4px;border-bottom-right-radius:4px;margin-left:10px;">
             </VanText>
           </VanLinearLayout>
 
@@ -190,14 +207,14 @@ align-items: stretch;">
               style="width:0px;border-left-width:1px;border-style:solid;borderLeftColor:#A9AEB8;border-top-width:0px;border-bottom-width:0px;border-right-width:0px;--van-space-base:0px;height:auto;">
             </VanLinearLayout>
 
-            <VanLinearLayout direction="horizontal" wrap={true}>
-              <VanLinearLayout
-                _if={current.item.type != "ProcInstText"}
-                direction="horizontal" wrap={true} gap="normal"
-                style="--van-space-base:0px;text-align:right;--custom-start: auto; width:calc( 100% - 1px );
+            <VanLinearLayout direction="horizontal" wrap={true} style=" --custom-start: auto; width:calc( 100% - 1px );
 padding-bottom: 5.33334vw;
 padding-top:2.13333vw;
 padding-left: calc(4vw + 4.26667vw);">
+              <VanLinearLayout
+                _if={current.item.type != "ProcInstText"}
+                direction="horizontal" wrap={true} gap="normal"
+                style="--van-space-base:0px;text-align:right;--custom-start: auto; ">
                 <VanLinearLayout direction="horizontal" wrap={false} mode="flex" justify="start" alignment="center" gap="normal" style="text-align:left;--van-space-base:0px;">
                   <VanText text="处理人" style="color:#999;text-align:left;--custom-start: auto; font-size: 100%;
 width: 18.66667vw;
@@ -328,16 +345,22 @@ line-height: 1.2em;"
 
               <VanLinearLayout
                 _if={(current.item.type == "ProcInstText") && ${nameGroup.isUnfold}}
-                direction="horizontal" wrap={false} mode="flex" justify="start" alignment="center">
+                direction="horizontal" wrap={false} mode="flex" justify="start" alignment="center"
+                style=" --custom-start: auto; margin-top:2.13333vw;">
                 <VanLinearLayout
                   direction="horizontal" wrap={false} mode="flex" justify="start" alignment="center"
                   onClick={function click() {
                     ${nameGroup.isUnfold} = false
                   }}>
-                  <VanIconv name="top-arrow" icotype="only">
+                  <VanIconv name="top-arrow" icotype="only" style="margin-right:10px;color:#3377ff; --custom-start: auto; font-size: var(--van-step-icon-size);
+width: 1.1em;
+height: 1.1em;
+vertical-align: -.15em;
+fill: currentColor;
+line-height: 1.1em;">
                     <VanText text="图标"></VanText>
                   </VanIconv>
-                  <VanText text="隐藏预测节点"></VanText>
+                  <VanText text="隐藏预测节点" style="color:#3377ff;"></VanText>
                 </VanLinearLayout>
               </VanLinearLayout>
             </VanLinearLayout>

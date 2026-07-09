@@ -54,7 +54,6 @@ function genTemplate(nameGroup: Record<string, string>) {
     dataSource={${nameGroup.getRecordsEvent}()}
     hiddenempty={true}
     scrollTarget="parent"
-    dataSourceWatch={[]}
     style="border-color:#c06161;borderTopColor:#c06161;borderBottomColor:#c06161;borderLeftColor:#c06161;borderRightColor:#c04e4e;height:auto;"
     slotNext={
       <VanText text="下一页"></VanText>
@@ -100,7 +99,8 @@ width: 18.66667vw;"></VanText>
             <VanText
               _if={current.item.type == "Prediction"}
               overflow="ellipsis" widthStretch="false"
-              text="预测">
+              text="预测"
+              style="color:#999999;text-align:left;margin-left:10px;padding-left:8px;padding-right:8px;padding-top:2px;padding-bottom:2px;background-color:#F2F3F5;border-top-left-radius:4px;border-bottom-left-radius:4px;border-top-right-radius:4px;border-bottom-right-radius:4px; --custom-start: auto; font-size: 100%;">
             </VanText>
           </VanLinearLayout>
 
@@ -239,12 +239,13 @@ width: 18.66667vw;"></VanText>
               } else {
                 ${nameGroup.isUnfold} = true
               }
-            }}>
-            <VanIconv name="bottom-arrow" icotype="only">
+            }}
+            style="--van-space-base:10px; --custom-start: auto; cursor:pointer;">
+            <VanIconv name="bottom-arrow" icotype="only" style="color:#3377ff;">
               <VanText text="图标"></VanText>
             </VanIconv>
-            <VanText _if={!(${nameGroup.isUnfold})} text="预测节点"></VanText>
-            <VanText _if={${nameGroup.isUnfold}} text="隐藏预测节点"></VanText>
+            <VanText _if={!(${nameGroup.isUnfold})} text="预测节点" style="color:#3377ff;"></VanText>
+            <VanText _if={${nameGroup.isUnfold}} text="隐藏预测节点" style="color:#3377ff;"></VanText>
           </VanLinearLayout>
         </VanAnchor>
       </VanLinearLayout>
