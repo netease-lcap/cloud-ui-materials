@@ -22,20 +22,20 @@ export function genOwProcessRecordTable(node: naslTypes.ViewElement | any) {
       let proInstRecordInfo
       let currentProccessInfo
       let PredictionInfo
-      let tableData: List<{ data: ${structureNamespace}.ProcInstRecord, type: String }>
+      let tableData: List<{ data: ${structureNamespace}.ProcInstRecord, type: String, pendingCalculation: Boolean }>
       let result
       if (nasl.util.HasValue(taskId)) {
         currentProccessInfo = ${logicNamespace}.getProcInstInfo(taskId)
         proInstRecordInfo = ${logicNamespace}.getProcInstRecords(taskId, 1, 1000)
         nasl.util.ListReverse(proInstRecordInfo.list)
-        nasl.util.AddAll(tableData, nasl.util.ListTransform(proInstRecordInfo.list, (item) => ({ data: item, type: "History" })))
-        nasl.util.AddAll(tableData, nasl.util.ListTransform(currentProccessInfo.procInstCurrNodes, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.currNodeTitle, nodeName: item.currNodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: "审批中", procInstId: currentProccessInfo.procInstId }), type: "Current" })))
+        nasl.util.AddAll(tableData, nasl.util.ListTransform(proInstRecordInfo.list, (item) => ({ data: item, type: "History", pendingCalculation: false })))
+        nasl.util.AddAll(tableData, nasl.util.ListTransform(currentProccessInfo.procInstCurrNodes, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.currNodeTitle, nodeName: item.currNodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: "审批中", procInstId: currentProccessInfo.procInstId }), type: "Current", pendingCalculation: false })))
         PredictionInfo = ${logicNamespace}.getProcInstPredictionListByInstId(currentProccessInfo.procInstId)
         if (PredictionInfo.length > 0) {
-          nasl.util.Add(tableData, { data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: null, nodeName: null, recordUser: null, recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "ProcInstText" })
+          nasl.util.Add(tableData, { data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: null, nodeName: null, recordUser: null, recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "ProcInstText", pendingCalculation: false })
         } else {
         }
-        nasl.util.AddAll(tableData, nasl.util.ListTransform(PredictionInfo, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.nodeTitle, nodeName: item.nodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "Prediction" })))
+        nasl.util.AddAll(tableData, nasl.util.ListTransform(PredictionInfo, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.nodeTitle, nodeName: item.nodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "Prediction", pendingCalculation: item.pendingCalculation })))
         result = tableData
       } else {
       }
@@ -111,6 +111,7 @@ margin-right: 2.13333vw;">
 width: 18.66667vw;"></VanText>
             </VanLinearLayout>
             <VanText
+              _if={!(current.item.pendingCalculation)}
               style="color:#333333;width:auto;text-align:left;--custom-start: auto; font-size: 100%;"
               overflow="ellipsis" widthStretch="true"
               text={(function match(_value) {
@@ -128,6 +129,12 @@ width: 18.66667vw;"></VanText>
                 } else {
                 }
               })(nasl.util.HasValue(current.item.data.recordUser.displayName))}>
+            </VanText>
+            <VanText
+              _if={current.item.pendingCalculation}
+              overflow="ellipsis" widthStretch="false"
+              text="待系统计算"
+              style="color:#333333;width:auto;text-align:left;--custom-start: auto; font-size: 100%;">
             </VanText>
           </VanLinearLayout>
 
@@ -181,7 +188,7 @@ max-width:calc(100% - 22vw);"
                   } else if (current.item.data.nodeOperation === 'end' || current.item.data.nodeOperation === 'terminate') {
                     return '#666666'
                   } else {
-                    return '#666666'
+                    return '#337EFF'
                   }
                 })(current.item.data.nodeOperation)
               }
@@ -198,7 +205,7 @@ max-width:calc(100% - 22vw);"
                   } else if (current.item.data.nodeOperation === 'end' || current.item.data.nodeOperation === 'terminate') {
                     return '#F5F5F5'
                   } else {
-                    return '#F5F5F5'
+                    return '#EAF2FF'
                   }
                 })(current.item.data.nodeOperation)
               }>
