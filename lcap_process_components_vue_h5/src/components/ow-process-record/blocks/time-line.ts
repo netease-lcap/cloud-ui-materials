@@ -11,6 +11,7 @@ export function genOwProcessRecordTimeline(node: naslTypes.ViewElement | any) {
     dataLength: view.getVariableUniqueName('procInstRecordsDatalen'), // 流程记录数据长度
     getRecordsEvent: view.getLogicUniqueName('getProcInstRecords'), // 查询流程记录
     isUnfold: view.getVariableUniqueName('isUnfold'), // 预测节点是否展开
+    currentHandler: view.getVariableUniqueName('currentHandler'), // 当前处理人
   };
 
   // 流程需要使用页面输入参数'taskId'，且不带数字后缀，这里不做唯一性命名
@@ -19,6 +20,7 @@ export function genOwProcessRecordTimeline(node: naslTypes.ViewElement | any) {
   return `export function view(${hasTaskIdParam ? '' : `taskId: string`}) {
     let ${nameGroup.dataLength}: Integer = 0; //流程记录数据长度
     let ${nameGroup.isUnfold}: Boolean = false; //预测节点是否展开
+    let ${nameGroup.currentHandler}: String; //当前处理人
 
     function ${nameGroup.getRecordsEvent}() {
       let proInstRecordInfo
@@ -50,7 +52,8 @@ export function genOwProcessRecordTimeline(node: naslTypes.ViewElement | any) {
 }
 
 export function genTemplate(nameGroup: Record<string, string>) {
-  return `<VanListView
+  return `<VanLinearLayout mode="block">
+  <VanListView
     pageable=""
     vusionDisabledAddslot={true}
     pageSize={null}
@@ -222,7 +225,25 @@ margin-right: 2.13333vw;
 line-height: 1.2em;"></VanText>
                   <VanText
                     _if={!(current.item.pendingCalculation)}
-                    style="color:#333333;width:100%;text-align:left;--custom-start: auto; font-size: 100%;line-height: 1.2em;"
+                    onClick={function click(event) {
+                if (nasl.util.HasValue(current.item.data.recordUser.displayName)) {
+                  if (nasl.util.Split(current.item.data.recordUser.displayName, ",", true).length > 3) {
+                    ${nameGroup.currentHandler} = current.item.data.recordUser.displayName
+                    $refs.dialog_1.openModal()
+                  } else {
+                  }
+                } else {
+                  if (nasl.util.HasValue(current.item.data.recordUser.userName)) {
+                    if (nasl.util.Split(current.item.data.recordUser.userName, ",", true).length > 3) {
+                      ${nameGroup.currentHandler} = current.item.data.recordUser.userName
+                      $refs.dialog_1.openModal()
+                    } else {
+                    }
+                  } else {
+                  }
+                }
+              }}
+              style="color:#333333;width:100%;text-align:left;--custom-start: auto; font-size: 100%;line-height: 1.2em;"
                     overflow="ellipsis"
                     text={
                       (function match(_value) {
@@ -391,5 +412,15 @@ line-height: 1.1em;">
 
       </VanLinearLayout>
     }>
-  </VanListView>`;
+  </VanListView>
+  <VanDialog
+    ref="dialog_1"
+    safeAreaInsetBottom={true}
+    slotFooter={() => <VanLinearLayout style="width: 100%;text-align:center;">
+      <VanButton class="van-button van-button--default van-dialog__cancel" text="取消" onClick={function click(event) { $refs.dialog_1.closeModal() }}></VanButton>
+      <VanButton class="van-button van-button--default van-dialog__confirm van-hairline--left" text="确认" onClick={function click(event) { $refs.dialog_1.closeModal() }}></VanButton>
+    </VanLinearLayout>}>
+    <VanLinearLayout style="min-height:100px;"><VanText text={\`当前节点处理人为：\${${nameGroup.currentHandler}}\`} overflow="break"></VanText></VanLinearLayout>
+  </VanDialog>
+</VanLinearLayout>`;
 }
