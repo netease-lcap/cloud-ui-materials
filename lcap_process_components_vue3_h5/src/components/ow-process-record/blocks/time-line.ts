@@ -12,6 +12,7 @@ export function genOwProcessRecordTimeline(node: naslTypes.ViewElement | any) {
     proccessRecordData: view.getVariableUniqueName('proccessRecordData'), // 流程记录数据
     getRecordsEvent: view.getLogicUniqueName('getProcInstRecords'), // 查询流程记录
     isUnfold: view.getVariableUniqueName('isUnfold'), // 预测节点是否展开
+    currentHandler: view.getVariableUniqueName('currentHandler'), // 当前处理人
     createdEvent: view.getLogicUniqueName('created'), // 页面创建事件
   };
 
@@ -21,25 +22,26 @@ export function genOwProcessRecordTimeline(node: naslTypes.ViewElement | any) {
   return `export function view(${hasTaskIdParam ? '' : `taskId: string`}) {
     let ${nameGroup.dataLength}: Long = 0; //流程记录数据长度
     let ${nameGroup.isUnfold}: Boolean; //预测节点是否展开
-    let ${nameGroup.proccessRecordData}: List<{ data: ${structureNamespace}.ProcInstRecord, type: String }>; //流程记录数据
+    let ${nameGroup.proccessRecordData}: List<{ data: ${structureNamespace}.ProcInstRecord, type: String, pendingCalculation: Boolean }>; //流程记录数据
+    let ${nameGroup.currentHandler}: String; //当前处理人
 
     function ${nameGroup.getRecordsEvent}() {
       let proInstRecordInfo
       let currentProccessInfo
       let PredictionInfo
-      let tableData: List<{ data: ${structureNamespace}.ProcInstRecord, type: String }>
+      let tableData: List<{ data: ${structureNamespace}.ProcInstRecord, type: String, pendingCalculation: Boolean }>
       if (nasl.util.HasValue(taskId)) {
         currentProccessInfo = ${logicNamespace}.getProcInstInfo(taskId)
         proInstRecordInfo = ${logicNamespace}.getProcInstRecords(taskId, 1, 1000)
         nasl.util.ListReverse(proInstRecordInfo.list)
-        nasl.util.AddAll(tableData, nasl.util.ListTransform(proInstRecordInfo.list, (item) => ({ data: item, type: "History" })))
-        nasl.util.AddAll(tableData, nasl.util.ListTransform(currentProccessInfo.procInstCurrNodes, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.currNodeTitle, nodeName: item.currNodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: "审批中", procInstId: currentProccessInfo.procInstId }), type: "Current" })))
+        nasl.util.AddAll(tableData, nasl.util.ListTransform(proInstRecordInfo.list, (item) => ({ data: item, type: "History", pendingCalculation: false })))
+        nasl.util.AddAll(tableData, nasl.util.ListTransform(currentProccessInfo.procInstCurrNodes, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.currNodeTitle, nodeName: item.currNodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: "审批中", procInstId: currentProccessInfo.procInstId }), type: "Current", pendingCalculation: false })))
         PredictionInfo = ${logicNamespace}.getProcInstPredictionListByInstId(currentProccessInfo.procInstId)
         if (PredictionInfo.length > 0) {
-          nasl.util.Add(tableData, { data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: null, nodeName: null, recordUser: null, recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "ProcInstText" })
+          nasl.util.Add(tableData, { data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: null, nodeName: null, recordUser: null, recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "ProcInstText", pendingCalculation: false })
         } else {
         }
-        nasl.util.AddAll(tableData, nasl.util.ListTransform(PredictionInfo, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.nodeTitle, nodeName: item.nodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "Prediction" })))
+        nasl.util.AddAll(tableData, nasl.util.ListTransform(PredictionInfo, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.nodeTitle, nodeName: item.nodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "Prediction", pendingCalculation: item.pendingCalculation })))
         ${nameGroup.proccessRecordData} = tableData
         ${nameGroup.dataLength} = tableData.length
       } else {
@@ -59,7 +61,8 @@ export function genOwProcessRecordTimeline(node: naslTypes.ViewElement | any) {
 }
 
 export function genTemplate(nameGroup: Record<string, string>) {
-  return `<VanList
+  return `<VanFlex mode="block">
+    <VanList
       dataSource={${nameGroup.proccessRecordData}}
       isCell={false}
       modelValue={undefined}
@@ -178,24 +181,66 @@ width: 18.66667vw;
 margin-right: 2.13333vw;
 line-height: 1.2em;"></VanText>
                     <VanText
+                      _if={!(current.item.pendingCalculation)}
                       style="color:#333;--custom-start: auto; font-size: 100%;
 line-height: 1.2em;
 flex: 1;"
-                      text={(function match(_value) {
-                        if (_value === true) {
-                          return current.item.data.recordUser.userName
-                        } else if (_value === false) {
-                          return (function match(_value) {
-                            if (_value === true) {
-                              return current.item.data.recordUser.userName
-                            } else if (_value === false) {
-                              return '-'
+                      onClick={function click(event) {
+                        if (nasl.util.HasValue(current.item.data.recordUser.displayName)) {
+                          if (nasl.util.Split(current.item.data.recordUser.displayName, ",", true).length > 3) {
+                            ${nameGroup.currentHandler} = current.item.data.recordUser.displayName
+                            $refs.dialog_1.open()
+                          } else {
+                          }
+                        } else {
+                          if (nasl.util.HasValue(current.item.data.recordUser.userName)) {
+                            if (nasl.util.Split(current.item.data.recordUser.userName, ",", true).length > 3) {
+                              ${nameGroup.currentHandler} = current.item.data.recordUser.userName
+                              $refs.dialog_1.open()
                             } else {
                             }
-                          })(nasl.util.HasValue(current.item.data.recordUser.userName))
-                        } else {
+                          } else {
+                          }
                         }
-                      })(nasl.util.HasValue(current.item.data.recordUser.displayName))}>
+                      }}
+                      text={
+                        (function match(_value) {
+                          if (_value === true) {
+                            return (function match(_value) {
+                              if (_value === true) {
+                                return nasl.util.Concat(nasl.util.Join(nasl.util.ListSlice(nasl.util.Split(current.item.data.recordUser.displayName, ",", true), 0, 3), ","), "...")
+                              } else if (_value === false) {
+                                return current.item.data.recordUser.displayName
+                              } else {
+                              }
+                            })(nasl.util.Split(current.item.data.recordUser.displayName, ",", true).length > 3)
+                          } else if (_value === false) {
+                            return (function match(_value) {
+                              if (_value === true) {
+                                return (function match(_value) {
+                                  if (_value === true) {
+                                    return nasl.util.Concat(nasl.util.Join(nasl.util.ListSlice(nasl.util.Split(current.item.data.recordUser.userName, ",", true), 0, 3), ","), "...")
+                                  } else if (_value === false) {
+                                    return current.item.data.recordUser.userName
+                                  } else {
+                                  }
+                                })(nasl.util.Split(current.item.data.recordUser.userName, ",", true).length > 3)
+                              } else if (_value === false) {
+                                return '-'
+                              } else {
+                              }
+                            })(nasl.util.HasValue(current.item.data.recordUser.userName))
+                          } else {
+                          }
+                        })(nasl.util.HasValue(current.item.data.recordUser.displayName))
+                      }>
+                    </VanText>
+                    <VanText
+                      _if={current.item.pendingCalculation}
+                      text="待系统计算"
+                      style="color:#333;--custom-start: auto; font-size: 100%;
+line-height: 1.2em;
+flex: 1;">
                     </VanText>
                   </VanFlex>
 
@@ -246,7 +291,7 @@ line-height:1.6;"
                         } else if (current.item.data.nodeOperation === 'end' || current.item.data.nodeOperation === 'terminate') {
                           return '#666666'
                         } else {
-                          return '#666666'
+                          return '#337EFF'
                         }
                       })(current.item.data.nodeOperation)}
                       _background-color={(function match(_value) {
@@ -261,7 +306,7 @@ line-height:1.6;"
                         } else if (current.item.data.nodeOperation === 'end' || current.item.data.nodeOperation === 'terminate') {
                           return '#F5F5F5'
                         } else {
-                          return '#F5F5F5'
+                          return '#EAF2FF'
                         }
                       })(current.item.data.nodeOperation)}>
                     </VanText>
@@ -309,5 +354,15 @@ flex: 1;"
 
       </VanFlex>}>
     </VanList>
+    <VanDialog
+      ref="dialog_1"
+      onConfirm={function confirm() {
+        $refs.dialog_1.close()
+      }}>
+      <VanFlex justify="center" alignment="start" style="padding-top:16px;padding-bottom:16px;padding-left:16px;padding-right:16px;">
+        <VanText text={\`当前节点处理人为：\${${nameGroup.currentHandler}}\`}></VanText>
+      </VanFlex>
+    </VanDialog>
+    </VanFlex>
   `;
 }

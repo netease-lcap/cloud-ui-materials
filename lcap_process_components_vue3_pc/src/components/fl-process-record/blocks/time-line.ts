@@ -23,26 +23,26 @@ export function genFlProcessRecordTimeline(node: naslTypes.ViewElement | any) {
   const hasTaskIdParam = view.params.some((param: any) => param.name === 'taskId');
 
   return `export function view(${hasTaskIdParam ? '' : `taskId: string`}) {
-    let ${nameGroup.procInstRecordsData}: List<{ data: ${structureNamespace}.ProcInstRecord, type: String }>; //流程记录数据
-    let ${nameGroup.isUnfold}: Boolean; //预测节点是否展开
+    let ${nameGroup.procInstRecordsData}: List<{ data: ${structureNamespace}.ProcInstRecord, type: String, pendingCalculation: Boolean }>; //流程记录数据
+    let ${nameGroup.isUnfold}: Boolean = false; //预测节点是否展开
 
     function ${nameGroup.getRecordsEvent}() {
       let currentProccessInfo
       let PredictionInfo
-      let tableData: List<{ data: ${structureNamespace}.ProcInstRecord, type: String }>
+      let tableData: List<{ data: ${structureNamespace}.ProcInstRecord, type: String, pendingCalculation: Boolean }>
       let proInstRecordInfo
       if (nasl.util.HasValue(taskId)) {
         currentProccessInfo = ${logicNamespace}.getProcInstInfo(taskId)
         proInstRecordInfo = ${logicNamespace}.getProcInstRecords(taskId, 1, 1000)
         nasl.util.ListReverse(proInstRecordInfo.list)
-        nasl.util.AddAll(tableData, nasl.util.ListTransform(proInstRecordInfo.list, (item) => ({ data: item, type: "History" })))
-        nasl.util.AddAll(tableData, nasl.util.ListTransform(currentProccessInfo.procInstCurrNodes, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.currNodeTitle, nodeName: item.currNodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: "审批中", procInstId: currentProccessInfo.procInstId }), type: "Current" })))
+        nasl.util.AddAll(tableData, nasl.util.ListTransform(proInstRecordInfo.list, (item) => ({ data: item, type: "History", pendingCalculation: false })))
+        nasl.util.AddAll(tableData, nasl.util.ListTransform(currentProccessInfo.procInstCurrNodes, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.currNodeTitle, nodeName: item.currNodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: "审批中", procInstId: currentProccessInfo.procInstId }), type: "Current", pendingCalculation: false })))
         PredictionInfo = ${logicNamespace}.getProcInstPredictionListByInstId(currentProccessInfo.procInstId)
         if (PredictionInfo.length > 0) {
-          nasl.util.Add(tableData, { data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: null, nodeName: null, recordUser: null, recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "ProcInstText" })
+          nasl.util.Add(tableData, { data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: null, nodeName: null, recordUser: null, recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "ProcInstText", pendingCalculation: false })
         } else {
         }
-        nasl.util.AddAll(tableData, nasl.util.ListTransform(PredictionInfo, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.nodeTitle, nodeName: item.nodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "Prediction" })))
+        nasl.util.AddAll(tableData, nasl.util.ListTransform(PredictionInfo, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.nodeTitle, nodeName: item.nodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.predictedUsers, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: null, procInstId: currentProccessInfo.procInstId }), type: "Prediction", pendingCalculation: item.pendingCalculation })))
         ${nameGroup.procInstRecordsData} = tableData
       } else {
       }
@@ -255,7 +255,7 @@ export function genTemplate(nameGroup: Record<string, string>) {
                       gutter={0}
                       widthStretch="false"
                       style="padding-right:10px;max-width:1283px;">
-                      <ElFlex
+                       <ElFlex
                         direction="horizontal"
                         mode="flex"
                         justify="start"
@@ -264,6 +264,7 @@ export function genTemplate(nameGroup: Record<string, string>) {
                         gutter={0}
                         style="height:22.4px;width:100%;">
                         <ElText
+                          _if={current.item.type != "Prediction"}
                           text={(function match(_value) {
                             if (_value === true) {
                               return current.item.data.recordUser.displayName
@@ -279,6 +280,62 @@ export function genTemplate(nameGroup: Record<string, string>) {
                             } else {
                             }
                           })(nasl.util.HasValue(current.item.data.recordUser.displayName))}
+                          overflow="ellipsis">
+                        </ElText>
+                        <ElTooltip
+                          content={(function match(_value) {
+                            if (_value === true) {
+                              return current.item.data.recordUser.displayName
+                            } else if (_value === false) {
+                              return (function match(_value) {
+                                if (_value === true) {
+                                  return current.item.data.recordUser.userName
+                                } else if (_value === false) {
+                                  return '-'
+                                } else {
+                                }
+                              })(nasl.util.HasValue(current.item.data.recordUser.userName))
+                            } else {
+                            }
+                          })(nasl.util.HasValue(current.item.data.recordUser.displayName))}
+                          placement="top">
+                          <ElText
+                            _if={(current.item.type == "Prediction") && (!(current.item.pendingCalculation))}
+                            text={(function match(_value) {
+                              if (_value === true) {
+                                return (function match(_value) {
+                                  if (_value === true) {
+                                    return nasl.util.Concat(nasl.util.Join(nasl.util.ListSlice(nasl.util.Split(current.item.data.recordUser.displayName, ",", true), 0, 3), ","), "...")
+                                  } else if (_value === false) {
+                                    return current.item.data.recordUser.displayName
+                                  } else {
+                                  }
+                                })(nasl.util.Split(current.item.data.recordUser.displayName, ",", true).length > 3)
+                              } else if (_value === false) {
+                                return (function match(_value) {
+                                  if (_value === true) {
+                                    return (function match(_value) {
+                                      if (_value === true) {
+                                        return nasl.util.Concat(nasl.util.Join(nasl.util.ListSlice(nasl.util.Split(current.item.data.recordUser.userName, ",", true), 0, 3), ","), "...")
+                                      } else if (_value === false) {
+                                        return current.item.data.recordUser.userName
+                                      } else {
+                                      }
+                                    })(nasl.util.Split(current.item.data.recordUser.userName, ",", true).length > 3)
+                                  } else if (_value === false) {
+                                    return '-'
+                                  } else {
+                                  }
+                                })(nasl.util.HasValue(current.item.data.recordUser.userName))
+                              } else {
+                              }
+                            })(nasl.util.HasValue(current.item.data.recordUser.displayName))}
+                            overflow="ellipsis">
+                          </ElText>
+                        </ElTooltip>
+                        <ElText
+                          _if={(current.item.type == "Prediction") && (current.item.pendingCalculation)}
+                          text="待系统计算"
                           overflow="ellipsis">
                         </ElText>
                       </ElFlex>
@@ -316,38 +373,36 @@ export function genTemplate(nameGroup: Record<string, string>) {
                           text={current.item.data.nodeOperationDisplayText}
                           overflow="ellipsis"
                           style="padding-top:1px;padding-bottom:1px;padding-left:8px;padding-right:8px;border-top-left-radius:4px;border-bottom-left-radius:4px;border-top-right-radius:4px;border-bottom-right-radius:4px;"
-                          $dynamicStyle={{
-                            color: (function match(_value) {
-                              if (current.item.data.nodeOperation === 'end' || current.item.data.nodeOperation === 'terminate') {
-                                return '#666666'
-                              } else if (current.item.data.nodeOperation === 'revert' || current.item.data.nodeOperation === 'withdraw') {
-                                return '#FF8024'
-                              } else if (current.item.data.nodeOperation === 'reject') {
-                                return '#F24957'
-                              } else if (current.item.data.nodeOperation === 'approve') {
-                                return '#26BD71'
-                              } else if (current.item.data.nodeOperation === 'launch' || current.item.data.nodeOperation === 'submit' || current.item.data.nodeOperation === 'reassign' || current.item.data.nodeOperation === 'addSign' || current.item.data.nodeOperation === 'cc') {
-                                return '#337EFF'
-                              } else {
-                                return '#666666'
-                              }
-                            })(current.item.data.nodeOperation),
-                            backgroundColor: (function match(_value) {
-                              if (current.item.data.nodeOperation === 'end' || current.item.data.nodeOperation === 'terminate') {
-                                return '#F5F5F5'
-                              } else if (current.item.data.nodeOperation === 'revert' || current.item.data.nodeOperation === 'withdraw') {
-                                return '#FFF2E9'
-                              } else if (current.item.data.nodeOperation === 'reject') {
-                                return '#FEEDEF'
-                              } else if (current.item.data.nodeOperation === 'approve') {
-                                return '#E9F8F0'
-                              } else if (current.item.data.nodeOperation === 'launch' || current.item.data.nodeOperation === 'submit' || current.item.data.nodeOperation === 'reassign' || current.item.data.nodeOperation === 'addSign' || current.item.data.nodeOperation === 'cc') {
-                                return '#EAF2FF'
-                              } else {
-                                return '#F5F5F5'
-                              }
-                            })(current.item.data.nodeOperation),
-                          }}>
+                          _color={(function match(_value) {
+                            if (current.item.data.nodeOperation === 'end' || current.item.data.nodeOperation === 'terminate') {
+                              return '#666666'
+                            } else if (current.item.data.nodeOperation === 'revert' || current.item.data.nodeOperation === 'withdraw') {
+                              return '#FF8024'
+                            } else if (current.item.data.nodeOperation === 'reject') {
+                              return '#F24957'
+                            } else if (current.item.data.nodeOperation === 'approve') {
+                              return '#26BD71'
+                            } else if (current.item.data.nodeOperation === 'launch' || current.item.data.nodeOperation === 'submit' || current.item.data.nodeOperation === 'reassign' || current.item.data.nodeOperation === 'addSign' || current.item.data.nodeOperation === 'cc') {
+                              return '#337EFF'
+                            } else {
+                              return '#337EFF'
+                            }
+                          })(current.item.data.nodeOperation)}
+                          _background-color={(function match(_value) {
+                            if (current.item.data.nodeOperation === 'end' || current.item.data.nodeOperation === 'terminate') {
+                              return '#F5F5F5'
+                            } else if (current.item.data.nodeOperation === 'revert' || current.item.data.nodeOperation === 'withdraw') {
+                              return '#FFF2E9'
+                            } else if (current.item.data.nodeOperation === 'reject') {
+                              return '#FEEDEF'
+                            } else if (current.item.data.nodeOperation === 'approve') {
+                              return '#E9F8F0'
+                            } else if (current.item.data.nodeOperation === 'launch' || current.item.data.nodeOperation === 'submit' || current.item.data.nodeOperation === 'reassign' || current.item.data.nodeOperation === 'addSign' || current.item.data.nodeOperation === 'cc') {
+                              return '#EAF2FF'
+                            } else {
+                              return '#EAF2FF'
+                            }
+                          })(current.item.data.nodeOperation)}>
                         </ElText>
                       </ElFlex>
                       <ElFlex
