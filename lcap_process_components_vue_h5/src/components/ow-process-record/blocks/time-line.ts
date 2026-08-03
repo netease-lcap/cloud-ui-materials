@@ -12,6 +12,7 @@ export function genOwProcessRecordTimeline(node: naslTypes.ViewElement | any) {
     getRecordsEvent: view.getLogicUniqueName('getProcInstRecords'), // 查询流程记录
     isUnfold: view.getVariableUniqueName('isUnfold'), // 预测节点是否展开
     currentHandler: view.getVariableUniqueName('currentHandler'), // 当前处理人
+    currentHandlerDialog: view.getViewElementUniqueName('currentHandlerDialog'), // 当前处理人弹窗
   };
 
   // 流程需要使用页面输入参数'taskId'，且不带数字后缀，这里不做唯一性命名
@@ -229,14 +230,14 @@ line-height: 1.2em;"></VanText>
                 if (nasl.util.HasValue(current.item.data.recordUser.displayName)) {
                   if (nasl.util.Split(current.item.data.recordUser.displayName, ",", true).length > 3) {
                     ${nameGroup.currentHandler} = current.item.data.recordUser.displayName
-                    $refs.dialog_1.openModal()
+                    $refs.${nameGroup.currentHandlerDialog}.openModal()
                   } else {
                   }
                 } else {
                   if (nasl.util.HasValue(current.item.data.recordUser.userName)) {
                     if (nasl.util.Split(current.item.data.recordUser.userName, ",", true).length > 3) {
                       ${nameGroup.currentHandler} = current.item.data.recordUser.userName
-                      $refs.dialog_1.openModal()
+                      $refs.${nameGroup.currentHandlerDialog}.openModal()
                     } else {
                     }
                   } else {
@@ -414,11 +415,11 @@ line-height: 1.1em;">
     }>
   </VanListView>
   <VanDialog
-    ref="dialog_1"
+    ref="${nameGroup.currentHandlerDialog}"
     safeAreaInsetBottom={true}
     slotFooter={() => <VanLinearLayout style="width: 100%;text-align:center;">
-      <VanButton class="van-button van-button--default van-dialog__cancel" text="取消" onClick={function click(event) { $refs.dialog_1.closeModal() }}></VanButton>
-      <VanButton class="van-button van-button--default van-dialog__confirm van-hairline--left" text="确认" onClick={function click(event) { $refs.dialog_1.closeModal() }}></VanButton>
+      <VanButton class="van-button van-button--default van-dialog__cancel" text="取消" onClick={function click(event) { $refs.${nameGroup.currentHandlerDialog}.closeModal() }}></VanButton>
+      <VanButton class="van-button van-button--default van-dialog__confirm van-hairline--left" text="确认" onClick={function click(event) { $refs.${nameGroup.currentHandlerDialog}.closeModal() }}></VanButton>
     </VanLinearLayout>}>
     <VanLinearLayout style="min-height:100px;"><VanText text={\`当前节点处理人为：\${${nameGroup.currentHandler}}\`} overflow="break"></VanText></VanLinearLayout>
   </VanDialog>

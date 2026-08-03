@@ -13,6 +13,7 @@ export function genOwProcessRecordTimeline(node: naslTypes.ViewElement | any) {
     getRecordsEvent: view.getLogicUniqueName('getProcInstRecords'), // 查询流程记录
     isUnfold: view.getVariableUniqueName('isUnfold'), // 预测节点是否展开
     currentHandler: view.getVariableUniqueName('currentHandler'), // 当前处理人
+    currentHandlerDialog: view.getViewElementUniqueName('currentHandlerDialog'), // 当前处理人弹窗
     createdEvent: view.getLogicUniqueName('created'), // 页面创建事件
   };
 
@@ -189,14 +190,14 @@ flex: 1;"
                         if (nasl.util.HasValue(current.item.data.recordUser.displayName)) {
                           if (nasl.util.Split(current.item.data.recordUser.displayName, ",", true).length > 3) {
                             ${nameGroup.currentHandler} = current.item.data.recordUser.displayName
-                            $refs.dialog_1.open()
+                            $refs.${nameGroup.currentHandlerDialog}.open()
                           } else {
                           }
                         } else {
                           if (nasl.util.HasValue(current.item.data.recordUser.userName)) {
                             if (nasl.util.Split(current.item.data.recordUser.userName, ",", true).length > 3) {
                               ${nameGroup.currentHandler} = current.item.data.recordUser.userName
-                              $refs.dialog_1.open()
+                              $refs.${nameGroup.currentHandlerDialog}.open()
                             } else {
                             }
                           } else {
@@ -355,9 +356,9 @@ flex: 1;"
       </VanFlex>}>
     </VanList>
     <VanDialog
-      ref="dialog_1"
+      ref="${nameGroup.currentHandlerDialog}"
       onConfirm={function confirm() {
-        $refs.dialog_1.close()
+        $refs.${nameGroup.currentHandlerDialog}.close()
       }}>
       <VanFlex justify="center" alignment="start" style="padding-top:16px;padding-bottom:16px;padding-left:16px;padding-right:16px;">
         <VanText text={\`当前节点处理人为：\${${nameGroup.currentHandler}}\`}></VanText>
