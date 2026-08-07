@@ -29,7 +29,7 @@ export function genFlProcessRecordTable(node: naslTypes.ViewElement | any) {
       let result
       if (nasl.util.HasValue(taskId)) {
         currentProccessInfo = ${logicNamespace}.getProcInstInfo(taskId)
-        proInstRecordInfo = ${logicNamespace}.getProcInstRecords(taskId, 1, 1000)
+        proInstRecordInfo = ${logicNamespace}.getProcInstRecords(taskId, 1, 1000, null)
         nasl.util.ListReverse(proInstRecordInfo.list)
         nasl.util.AddAll(tableData, nasl.util.ListTransform(proInstRecordInfo.list, (item) => ({ data: item, type: "History", pendingCalculation: false })))
         nasl.util.AddAll(tableData, nasl.util.ListTransform(currentProccessInfo.procInstCurrNodes, (item) => ({ data: new ${structureNamespace}.ProcInstRecord({ nodeTitle: item.currNodeTitle, nodeName: item.currNodeName, recordUser: new ${structureNamespace}.ProcessUser({ userName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => item1.userName), ","), displayName: nasl.util.Join(nasl.util.ListTransform(item.currNodeParticipants, (item1) => (function match(_value) { if (_value === true) { return item1.displayName } else if (_value === false) { return item1.userName } else { } })(nasl.util.HasValue(item1.displayName))), ",") }), recordCreatedTime: null, nodeOperationComment: null, nodeOperation: null, nodeOperationDisplayText: "审批中", procInstId: currentProccessInfo.procInstId }), type: "Current", pendingCalculation: false })))

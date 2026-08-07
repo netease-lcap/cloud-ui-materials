@@ -167,7 +167,7 @@ export function genSubFormStencilTemplate(
                   slotHeader={ <ElText text="序号"></ElText> }
                 >
                 </ElTableColumn>
-                ${properties.map((property: any) => `${genTableColumnTemplate(entity, property, nameGroup, selectNameGroupMap)}`).join('\n')}
+                ${properties.map((property: any, index: number) => `${genTableColumnTemplate(entity, property, nameGroup, selectNameGroupMap, index === properties.length - 1)}`).join('\n')}
                 <ElTableColumn
                   isFixed={true}
                   resizable={false}
@@ -255,13 +255,14 @@ function genTableColumnTemplate(
   entity: naslTypes.Entity,
   property: naslTypes.EntityProperty,
   nameGroup: NameGroup,
-  selectNameGroupMap: Map<string, NameGroup>
+  selectNameGroupMap: Map<string, NameGroup>,
+  isLast: boolean = false
 ) {
   const { title } = genColumnMeta(property, nameGroup);
   const required = property.required;
 
   return `<ElTableColumn
-    style="width:180px;"
+    ${isLast ? '' : 'style="width:180px;"'}
     resizable={false}
     prop="${property.name}"
     slotHeader={
@@ -378,21 +379,18 @@ function genPropertyEditableTemplate(
   }
   if (propertyTypeName === 'Integer' || propertyTypeName === 'Long') {
     return `<ElFormInputNumber ${formItemAttrs.join(' ')}
-        theme="column"
         placeholder="请输入${label}"
         modelValue={$sync(${vModel})}>
     </ElFormInputNumber>`;
   }
   if (propertyTypeName === 'Double') {
     return `<ElFormInputNumber ${formItemAttrs.join(' ')}
-        theme="column"
         placeholder="请输入${label}"
         modelValue={$sync(${vModel})}>
     </ElFormInputNumber>`;
   }
   if (propertyTypeName === 'Decimal') {
     return `<ElFormInputNumber ${formItemAttrs.join(' ')}
-        theme="column"
         placeholder="请输入${label}"
         modelValue={$sync(${vModel})}>
     </ElFormInputNumber>`;

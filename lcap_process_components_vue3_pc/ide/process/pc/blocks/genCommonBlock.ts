@@ -222,19 +222,16 @@ export function genPropertyEditableTemplate(entity: naslTypes.Entity, property: 
     </ElFormSelect>`;
   } if (propertyTypeName === 'Integer' || propertyTypeName === 'Long') {
     return `<ElFormInputNumber ${formItemAttrs.join(' ')}
-        theme="column"
         placeholder="请输入${label}"
         modelValue={$sync(${vModel})}>
     </ElFormInputNumber>`;
   } if (propertyTypeName === 'Double') {
     return `<ElFormInputNumber ${formItemAttrs.join(' ')}
-        theme="column"
         placeholder="请输入${label}"
         modelValue={$sync(${vModel})}>
     </ElFormInputNumber>`;
   } if (propertyTypeName === 'Decimal') {
     return `<ElFormInputNumber ${formItemAttrs.join(' ')}
-        theme="column"
         placeholder="请输入${label}"
         modelValue={$sync(${vModel})}>
     </ElFormInputNumber>`;
@@ -362,7 +359,6 @@ export function genFormItemTemplate(
   if (required) rules.push('nasl.validation.required()');
   
   const formItemAttrs: string[] = [
-    'layout="center"',
     `slotLabel={<ElText text="${label}"></ElText>}`,
   ];
   

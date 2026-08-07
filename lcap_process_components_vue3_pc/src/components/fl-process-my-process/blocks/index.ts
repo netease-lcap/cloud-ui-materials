@@ -119,7 +119,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
               <ElText text="流程" widthStretch="false" style="text-align:right;padding-right:20px;width:56px;"></ElText>
               <ElSelect
                 modelValue={$sync(${nameGroup.filterVar}.procDefKey)}
-                dataSource={${logicNamespace}.getProcDefInfos(undefined)}
+                dataSource={${logicNamespace}.getProcDefInfos(undefined, undefined)}
                 textField="procDefTitle"
                 valueField="procDefKey"
                 filterable={true}
@@ -138,8 +138,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
                 startValue={$sync(${nameGroup.filterVar}.procInstStartTimeAfter)}
                 endValue={$sync(${nameGroup.filterVar}.procInstStartTimeBefore)}
                 rangeSeparator="-"
-                format="YYYY-MM-DD"
-                valueFormat="">
+                format="YYYY-MM-DD">
               </ElDatePicker>
             </ElFlex>
             <ElFlex direction="horizontal" mode="flex" justify="end" alignment="center" gutter={0} style="margin-bottom:20px;margin-right:16px;position:relative;left:0;top:0;">
@@ -314,7 +313,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
               <ElText text="流程" widthStretch="false" style="text-align:right;padding-right:20px;width:56px;"></ElText>
               <ElSelect
                 modelValue={$sync(${nameGroup.filterVar}.procDefKey)}
-                dataSource={${logicNamespace}.getProcDefInfos(undefined)}
+                dataSource={${logicNamespace}.getProcDefInfos(undefined, undefined)}
                 textField="procDefTitle"
                 valueField="procDefKey"
                 filterable={true}
@@ -333,8 +332,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
                 startValue={$sync(${nameGroup.filterVar}.procInstStartTimeAfter)}
                 endValue={$sync(${nameGroup.filterVar}.procInstStartTimeBefore)}
                 rangeSeparator="-"
-                format="YYYY-MM-DD"
-                valueFormat="">
+                format="YYYY-MM-DD">
               </ElDatePicker>
             </ElFlex>
             <ElFlex direction="horizontal" mode="flex" justify="end" alignment="center" gutter={0} style="margin-bottom:20px;margin-right:16px;position:relative;left:0;top:0;">
@@ -509,7 +507,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
               <ElText text="流程" widthStretch="false" style="text-align:right;padding-right:20px;width:56px;"></ElText>
               <ElSelect
                 modelValue={$sync(${nameGroup.filterVar}.procDefKey)}
-                dataSource={${logicNamespace}.getProcDefInfos(undefined)}
+                dataSource={${logicNamespace}.getProcDefInfos(undefined, undefined)}
                 textField="procDefTitle"
                 valueField="procDefKey"
                 filterable={true}
@@ -528,8 +526,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
                 startValue={$sync(${nameGroup.filterVar}.procInstStartTimeAfter)}
                 endValue={$sync(${nameGroup.filterVar}.procInstStartTimeBefore)}
                 rangeSeparator="-"
-                format="YYYY-MM-DD"
-                valueFormat="">
+                format="YYYY-MM-DD">
               </ElDatePicker>
             </ElFlex>
           </ElFlex>
@@ -707,7 +704,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
               <ElText text="流程" widthStretch="false" style="text-align:right;padding-right:20px;width:56px;"></ElText>
               <ElSelect
                 modelValue={$sync(${nameGroup.filterVar}.procDefKey)}
-                dataSource={${logicNamespace}.getProcDefInfos(undefined)}
+                dataSource={${logicNamespace}.getProcDefInfos(undefined, undefined)}
                 textField="procDefTitle"
                 valueField="procDefKey"
                 filterable={true}
@@ -726,8 +723,7 @@ function genTemplate(nameGroup: Record<string, string>, logicNamespace: string, 
                 startValue={$sync(${nameGroup.filterVar}.procInstStartTimeAfter)}
                 endValue={$sync(${nameGroup.filterVar}.procInstStartTimeBefore)}
                 rangeSeparator="-"
-                format="YYYY-MM-DD"
-                valueFormat="">
+                format="YYYY-MM-DD">
               </ElDatePicker>
             </ElFlex>
             <ElFlex direction="horizontal" mode="flex" justify="end" alignment="center" gutter={0} style="margin-bottom:20px;margin-right:16px;position:relative;left:0;top:0;">
