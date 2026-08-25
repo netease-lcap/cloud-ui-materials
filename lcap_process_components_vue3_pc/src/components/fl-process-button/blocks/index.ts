@@ -161,11 +161,11 @@ if (window.__processDetailFromMixinFormVm__ && window.__processDetailFromMixinFo
         if (name === 'revert') {
           ${logicNamespace}.revertTaskV2(taskId, ${nameGroup.rollBackBody}.nodeList, ${nameGroup.buttonBody}.afterComplete, ${nameGroup.buttonBody}.comment)
         } else if (name === 'withdraw') {
-          ${logicNamespace}.withdrawTask(taskId)
+          ${logicNamespace}.withdrawTask(taskId, null)
         } else if (name === 'addSign') {
-          ${logicNamespace}.addSignTaskForMultiUser(taskId, ${nameGroup.buttonBody}.userForOperate, ${nameGroup.buttonBody}.policyForAddSign)
+          ${logicNamespace}.addSignTaskForMultiUser(taskId, ${nameGroup.buttonBody}.userForOperate, ${nameGroup.buttonBody}.policyForAddSign, null)
         } else if (name === 'reassign') {
-          ${logicNamespace}.reassignTaskForMultiUser(taskId, ${nameGroup.buttonBody}.userForOperate)
+          ${logicNamespace}.reassignTaskForMultiUser(taskId, ${nameGroup.buttonBody}.userForOperate, null)
         } else {
           nasl.js.block(\`'use JSBlock' \nconst operate = name+'Task';
 const body = {
