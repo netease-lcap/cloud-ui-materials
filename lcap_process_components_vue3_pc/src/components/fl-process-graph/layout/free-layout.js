@@ -1,5 +1,7 @@
 import { DIRECTION, Waypoint_to_DIR } from '../utils';
 import { toRaw } from 'vue';
+// 会产生条件分支的网关类型，接口返回的并行网关实际类型是 InclusiveGateway
+const GATEWAY_TYPES = ['ExclusiveGateway', 'ParallelGateway', 'InclusiveGateway'];
 export function resetLinkCache(node) {
     node._linkCache = new WeakMap();
     node._linkDirCache = {
@@ -46,7 +48,7 @@ class FreeLayout {
                 if(type === "InitiateTask") {
                     startNode = processComponent;
                 }
-                if(type === 'ExclusiveGateway' || type === 'ParallelGateway') {
+                if(GATEWAY_TYPES.includes(type)) {
                     gateways.push(name);
                 }
             }
